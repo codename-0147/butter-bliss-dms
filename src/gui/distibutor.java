@@ -77,13 +77,13 @@ public class distibutor extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jButton8 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
         jButton14 = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -134,19 +134,16 @@ public class distibutor extends javax.swing.JPanel {
         jLabel5.setText("Hi,");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(22, 32, -1, 40));
 
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-waving-hand-light-skin-tone-32.png"))); // NOI18N
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(222, 32, 50, 40));
-
         jPanel3.setBackground(new java.awt.Color(255, 186, 86));
 
-        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-close-24.png"))); // NOI18N
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-close-24.png"))); // NOI18N
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
             }
         });
 
-        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-test-account-32.png"))); // NOI18N
+        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-test-account-32.png"))); // NOI18N
         jButton13.setBorder(null);
         jButton13.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -155,10 +152,10 @@ public class distibutor extends javax.swing.JPanel {
         });
 
         jButton14.setBackground(new java.awt.Color(255, 153, 51));
-        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-notification-32.png"))); // NOI18N
+        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-notification-32.png"))); // NOI18N
         jButton14.setBorder(null);
 
-        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-search-27.png"))); // NOI18N
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-search-27.png"))); // NOI18N
 
         jTextField2.setText("Search");
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
@@ -167,37 +164,42 @@ public class distibutor extends javax.swing.JPanel {
             }
         });
 
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-waving-hand-light-skin-tone-32.png"))); // NOI18N
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(412, Short.MAX_VALUE)
+                .addContainerGap(193, Short.MAX_VALUE)
+                .addComponent(jLabel7)
+                .addGap(137, 137, 137)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(154, 154, 154)
-                .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(175, 175, 175)
+                .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(44, 44, 44)
                 .addComponent(jButton8)
-                .addGap(14, 14, 14))
+                .addGap(24, 24, 24))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton8)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(29, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
                 .addGap(21, 21, 21))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton8)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 990, 90));
@@ -206,7 +208,7 @@ public class distibutor extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Trebuchet MS", 0, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 133, 12));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-user-60.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-user-60.png"))); // NOI18N
         jLabel1.setText("Distributor Profile");
 
         jLabel2.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
@@ -319,7 +321,7 @@ public class distibutor extends javax.swing.JPanel {
         jButton3.setBackground(new java.awt.Color(253, 236, 218));
         jButton3.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
         jButton3.setForeground(new java.awt.Color(204, 102, 0));
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-delivery-48.png"))); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-delivery-48.png"))); // NOI18N
         jButton3.setText("Total Distributors");
         jButton3.setBorder(null);
         jButton3.setBorderPainted(false);
@@ -375,7 +377,7 @@ public class distibutor extends javax.swing.JPanel {
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel13)
                             .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 228, Short.MAX_VALUE)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15))))
         );
@@ -451,7 +453,7 @@ public class distibutor extends javax.swing.JPanel {
         });
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-best-36.png"))); // NOI18N
+        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-best-36.png"))); // NOI18N
         jLabel17.setText("Best Delivery Distributor");
         jLabel17.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
@@ -472,7 +474,7 @@ public class distibutor extends javax.swing.JPanel {
                     .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(14, 14, 14))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(32, Short.MAX_VALUE)
+                .addContainerGap(25, Short.MAX_VALUE)
                 .addComponent(jLabel17)
                 .addGap(27, 27, 27))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
@@ -511,7 +513,7 @@ public class distibutor extends javax.swing.JPanel {
 
         jButton9.setBackground(new java.awt.Color(255, 188, 104));
         jButton9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-payment-30.png"))); // NOI18N
+        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-payment-30.png"))); // NOI18N
         jButton9.setText("Distributor Payment");
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -522,13 +524,13 @@ public class distibutor extends javax.swing.JPanel {
 
         jButton10.setBackground(new java.awt.Color(255, 188, 104));
         jButton10.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-status-35 (1).png"))); // NOI18N
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-status-35 (1).png"))); // NOI18N
         jButton10.setText("Payment Status");
         jPanel1.add(jButton10, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 580, 290, 40));
 
         jButton11.setBackground(new java.awt.Color(255, 188, 104));
         jButton11.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-dashboard-40_1.png"))); // NOI18N
+        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-dashboard-40_1.png"))); // NOI18N
         jButton11.setText("Distributor Dashboard");
         jPanel1.add(jButton11, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 630, 290, 40));
 

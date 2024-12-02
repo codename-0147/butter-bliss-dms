@@ -269,13 +269,13 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
         jLabel6.setText("Admin Name");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 30, 160, 40));
 
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-waving-hand-light-skin-tone-32.png"))); // NOI18N
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-waving-hand-light-skin-tone-32.png"))); // NOI18N
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 30, 50, 40));
 
         jPanel3.setBackground(new java.awt.Color(255, 186, 86));
 
         jButton6.setBackground(new java.awt.Color(255, 186, 86));
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-close-24.png"))); // NOI18N
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-close-24.png"))); // NOI18N
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -283,7 +283,7 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
         });
 
         jButton13.setBackground(new java.awt.Color(255, 186, 86));
-        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-test-account-32.png"))); // NOI18N
+        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-test-account-32.png"))); // NOI18N
         jButton13.setBorder(null);
         jButton13.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -292,7 +292,7 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
         });
 
         jButton14.setBackground(new java.awt.Color(255, 186, 86));
-        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-notification-32.png"))); // NOI18N
+        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-notification-32.png"))); // NOI18N
         jButton14.setBorder(null);
         jButton14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -300,7 +300,7 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
             }
         });
 
-        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-search-27.png"))); // NOI18N
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-search-27.png"))); // NOI18N
 
         jTextField2.setText("Search");
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
@@ -314,7 +314,7 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(420, Short.MAX_VALUE)
+                .addContainerGap(378, Short.MAX_VALUE)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -322,16 +322,12 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
                 .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton6)
-                .addGap(116, 116, 116))
+                .addGap(33, 33, 33)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(133, 133, 133))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton6)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(28, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -341,6 +337,10 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
                         .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(22, 22, 22))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1100, 90));
@@ -413,7 +413,7 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
         jPanel4.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 360, 110, 30));
 
         jLabel11.setBackground(new java.awt.Color(204, 255, 0));
-        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/picpro.png"))); // NOI18N
+        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/picpro.png"))); // NOI18N
         jLabel11.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel4.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 290, 270));
 
@@ -474,7 +474,7 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
             }
         });
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-clear-25.png"))); // NOI18N
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-clear-25.png"))); // NOI18N
         jButton5.setText("Clear");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -482,7 +482,7 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
             }
         });
 
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-print-25.png"))); // NOI18N
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-print-25.png"))); // NOI18N
         jButton7.setText("Print");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -490,7 +490,7 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
             }
         });
 
-        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-usd-25.png"))); // NOI18N
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-usd-25.png"))); // NOI18N
         jButton8.setText("Pay");
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -638,19 +638,19 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
 
         jButton12.setBackground(new java.awt.Color(204, 255, 204));
         jButton12.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-amount-40.png"))); // NOI18N
+        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-amount-40.png"))); // NOI18N
         jButton12.setText("Distributor Total Amount");
         jPanel1.add(jButton12, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 290, 70));
 
         jButton15.setBackground(new java.awt.Color(227, 255, 255));
         jButton15.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
-        jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-count-40.png"))); // NOI18N
+        jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-count-40.png"))); // NOI18N
         jButton15.setText("Return Status Count");
         jPanel1.add(jButton15, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 110, 290, 70));
 
         jButton16.setBackground(new java.awt.Color(229, 253, 204));
         jButton16.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-return-40.png"))); // NOI18N
+        jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-return-40.png"))); // NOI18N
         jButton16.setText("Outlet Returns Total");
         jPanel1.add(jButton16, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 110, 310, 70));
 
@@ -667,22 +667,6 @@ private void updateCountsDisplay(int DistributorTotalAmount, int OutletTotalAmou
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 725, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
-
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton14ActionPerformed
-
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-       
-    }//GEN-LAST:event_jButton13ActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        this.HO.removefinance();
-    }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
@@ -932,6 +916,22 @@ loadoutletpayment();
         
         
     }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField2ActionPerformed
+
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton14ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+
+    }//GEN-LAST:event_jButton13ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        this.HO.removefinance();
+    }//GEN-LAST:event_jButton6ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

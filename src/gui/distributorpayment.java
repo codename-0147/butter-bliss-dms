@@ -323,7 +323,7 @@ public class distributorpayment extends javax.swing.JFrame {
         jPanel4.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 440, 240, 40));
 
         jButton2.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-clear-26.png"))); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-clear-26.png"))); // NOI18N
         jButton2.setText("Clear");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -333,7 +333,7 @@ public class distributorpayment extends javax.swing.JFrame {
         jPanel4.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 570, 130, 40));
 
         jButton3.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-add-26.png"))); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-add-26.png"))); // NOI18N
         jButton3.setText("Add ");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -343,7 +343,7 @@ public class distributorpayment extends javax.swing.JFrame {
         jPanel4.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 570, 130, 40));
 
         jButton4.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-update-26.png"))); // NOI18N
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-update-26.png"))); // NOI18N
         jButton4.setText("Update");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -352,7 +352,7 @@ public class distributorpayment extends javax.swing.JFrame {
         });
         jPanel4.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 570, 130, 40));
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-print-35.png"))); // NOI18N
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-print-25.png"))); // NOI18N
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -423,7 +423,7 @@ public class distributorpayment extends javax.swing.JFrame {
         jLabel11.setText("Search");
         jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 20, -1, -1));
 
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-delete-38.png"))); // NOI18N
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-delete-38.png"))); // NOI18N
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
