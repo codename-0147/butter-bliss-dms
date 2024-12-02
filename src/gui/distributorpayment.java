@@ -429,7 +429,7 @@ public class distributorpayment extends javax.swing.JFrame {
                 jButton6ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 5, 50, -1));
+        jPanel2.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 5, 60, 40));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 110, 710, 690));
 

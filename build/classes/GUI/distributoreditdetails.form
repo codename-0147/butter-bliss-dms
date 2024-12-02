@@ -292,7 +292,7 @@
                   <Font name="Trebuchet MS" size="18" style="0"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Source/icons8-update-26_1.png"/>
+                  <Image iconType="3" name="/resources/icons8-update-26.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Update"/>
               </Properties>
@@ -311,7 +311,7 @@
                   <Font name="Trebuchet MS" size="18" style="0"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Source/icons8-clear-26.png"/>
+                  <Image iconType="3" name="/resources/icons8-clear-25.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Clear"/>
               </Properties>
@@ -485,7 +485,7 @@
             <Component class="javax.swing.JButton" name="jButton3">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Source/icons8-delete-38.png"/>
+                  <Image iconType="3" name="/resources/icons8-delete-38.png"/>
                 </Property>
               </Properties>
               <Events>
@@ -493,7 +493,7 @@
               </Events>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="6" y="13" width="-1" height="-1"/>
+                  <AbsoluteConstraints x="6" y="13" width="-1" height="40"/>
                 </Constraint>
               </Constraints>
             </Component>

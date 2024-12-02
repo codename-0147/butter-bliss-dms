@@ -209,7 +209,7 @@ public class distributoreditdetails extends javax.swing.JFrame {
         jPanel4.add(jTextField7, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 410, 310, 40));
 
         jButton1.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-update-26_1.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-update-26.png"))); // NOI18N
         jButton1.setText("Update");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -219,7 +219,7 @@ public class distributoreditdetails extends javax.swing.JFrame {
         jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 500, 170, 40));
 
         jButton2.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-clear-26.png"))); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-clear-25.png"))); // NOI18N
         jButton2.setText("Clear");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -281,13 +281,13 @@ public class distributoreditdetails extends javax.swing.JFrame {
         jLabel5.setText("Search");
         jPanel5.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 20, -1, -1));
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Source/icons8-delete-38.png"))); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-delete-38.png"))); // NOI18N
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel5.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 13, -1, -1));
+        jPanel5.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 13, -1, 40));
 
         jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 110, 770, 580));
 

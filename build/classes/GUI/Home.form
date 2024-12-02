@@ -38,7 +38,8 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel2" pref="1011" max="32767" attributes="0"/>
+              <Component id="jPanel2" min="-2" pref="1006" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -63,49 +64,40 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="16" pref="16" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Component id="jLabel4" min="-2" pref="65" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jToggleButton2" min="-2" pref="40" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
+                          <Component id="jToggleButton1" min="-2" pref="38" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Component id="jToggleButton2" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="jToggleButton1" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel4" min="-2" pref="65" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="jButton12" alignment="0" pref="251" max="32767" attributes="0"/>
+                                  <Component id="jButton11" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jButton10" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jButton9" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jButton7" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jButton8" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jButton14" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jButton13" max="32767" attributes="0"/>
                               </Group>
-                              <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" attributes="0">
-                                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Group type="102" attributes="0">
-                                                  <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                                                  <Component id="jLabel3" min="-2" pref="137" max="-2" attributes="0"/>
-                                              </Group>
-                                              <Group type="102" alignment="0" attributes="0">
-                                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                                  <Component id="jLabel2" min="-2" pref="185" max="-2" attributes="0"/>
-                                              </Group>
-                                          </Group>
-                                      </Group>
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="jButton12" alignment="0" pref="251" max="32767" attributes="0"/>
-                                          <Component id="jButton11" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jButton10" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jButton9" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jButton7" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jButton8" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jButton14" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jButton13" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              </Group>
+                              <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                          <EmptySpace min="22" pref="26" max="32767" attributes="0"/>
                       </Group>
                   </Group>
+              </Group>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
+                  <Component id="jLabel3" min="-2" pref="137" max="-2" attributes="0"/>
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace pref="62" max="32767" attributes="0"/>
+                  <Component id="jLabel2" min="-2" pref="185" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -113,24 +105,17 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jToggleButton1" min="-2" max="-2" attributes="0"/>
-                      <Component id="jToggleButton2" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="jToggleButton1" max="32767" attributes="0"/>
+                      <Component id="jToggleButton2" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                          <Component id="jLabel2" min="-2" pref="20" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel2" min="-2" pref="20" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Component id="jButton7" min="-2" pref="47" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jButton8" min="-2" pref="47" max="-2" attributes="0"/>
@@ -142,7 +127,7 @@
                   <Component id="jButton10" min="-2" pref="47" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jButton11" min="-2" pref="47" max="-2" attributes="0"/>
-                  <EmptySpace pref="30" max="32767" attributes="0"/>
+                  <EmptySpace pref="28" max="32767" attributes="0"/>
                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                   <Component id="jButton12" min="-2" pref="47" max="-2" attributes="0"/>
@@ -157,7 +142,7 @@
         <Component class="javax.swing.JToggleButton" name="jToggleButton1">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-filter-mail-32.png"/>
+              <Image iconType="3" name="/resources/icons8-filter-mail-32.png"/>
             </Property>
           </Properties>
           <Events>
@@ -167,7 +152,7 @@
         <Component class="javax.swing.JToggleButton" name="jToggleButton2">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-filter-mail-32 (1).png"/>
+              <Image iconType="3" name="/resources/icons8-filter-mail-32 (1).png"/>
             </Property>
           </Properties>
           <Events>
@@ -190,7 +175,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-dashboard-40.png"/>
+              <Image iconType="3" name="/resources/icons8-dashboard-40.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="DASHBOARD"/>
           </Properties>
@@ -223,7 +208,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-warehouse-31.png"/>
+              <Image iconType="3" name="/resources/icons8-warehouse-31.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="WAREHOUSE"/>
           </Properties>
@@ -237,7 +222,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-store-31.png"/>
+              <Image iconType="3" name="/resources/icons8-store-31.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="OUTLET"/>
           </Properties>
@@ -251,7 +236,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-employee-31 (1).png"/>
+              <Image iconType="3" name="/resources/icons8-employee-31 (1).png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="EMPLOYEE"/>
           </Properties>
@@ -268,7 +253,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-cash-receipt-31.png"/>
+              <Image iconType="3" name="/resources/icons8-cash-receipt-31.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="FINANCE"/>
           </Properties>
@@ -285,7 +270,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-help-31.png"/>
+              <Image iconType="3" name="/resources/icons8-help-31.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="HELP &amp; REPORT"/>
           </Properties>
@@ -299,7 +284,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-logout-31.png"/>
+              <Image iconType="3" name="/resources/icons8-logout-31.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="LOGOUT"/>
           </Properties>
@@ -313,7 +298,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Source/icons8-delivery-31.png"/>
+              <Image iconType="3" name="/resources/icons8-delivery-31.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="DISTRIBUTOR"/>
           </Properties>
