@@ -126,14 +126,14 @@ private int totalOrdersCount;
  
   private void showSpecialOrderNotification(Date selectedDate) {
     Calendar targetCalendar = Calendar.getInstance();
-    targetCalendar.set(2024, Calendar.OCTOBER, 10);  
+    targetCalendar.set(2024, Calendar.DECEMBER, 1);  
     Date targetDate = targetCalendar.getTime();
 
     if (isSameDay(selectedDate, targetDate)) {
         String message = "\nSpecial Delivery -: Chocolate Cakes(5)\n"
                 + selectedDate + ": \nLocation: Kiribathgoda \nTime: 11:30-12:00";
 
-        ImageIcon icon = new ImageIcon(getClass().getResource("/images/icons8-add-reminder-28.png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource("/resources/icons8-add-reminder-28.png"));
 
         if (icon.getImageLoadStatus() == MediaTracker.ERRORED) {
             System.out.println("Icon not found!");
