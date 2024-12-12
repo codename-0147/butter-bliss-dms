@@ -208,7 +208,7 @@ public class warehouse extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton21ActionPerformed
 
     private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
-                 productTable pt = new productTable(home, true);
+                 wproductTable pt = new wproductTable(home, true);
                  pt.setVisible(true);
     }//GEN-LAST:event_jButton19ActionPerformed
 
