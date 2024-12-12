@@ -83,7 +83,7 @@ private int outletcount;
         jButton3.setText("<html><div style='text-align: center;'><span style='font-size:14px;'><b>Total Orders </span>"
                           + "<span style='font-size:16px;'>" + ordercount + "</span><br></br></div></html>");
         
-        jButton2.setText("<html><div style='text-align: center;'><span style='font-size:14px;'><b>Total Orders </span>"
+        jButton2.setText("<html><div style='text-align: center;'><span style='font-size:14px;'><b>Total Outlets </span>"
                           + "<span style='font-size:16px;'>" + outletcount + "</span><br></br></div></html>");
     }
 
