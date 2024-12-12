@@ -211,7 +211,7 @@ public class employee extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
-       productTable pt = new productTable(home, true);
+       wproductTable pt = new wproductTable(home, true);
        pt.setVisible(true);
     }//GEN-LAST:event_jTextField7ActionPerformed
 
