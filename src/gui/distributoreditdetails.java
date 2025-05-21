@@ -7,7 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -76,7 +78,7 @@ public class distributoreditdetails extends javax.swing.JFrame {
                 vector.add(resultSet.getString("address"));
                 vector.add(resultSet.getString("joined_date"));
                 vector.add(resultSet.getString("nic"));
-                //vector.add(resultSet.getString("email"));
+                vector.add(resultSet.getString("email"));
                 
 
                 dtm.addRow(vector);
@@ -271,6 +273,12 @@ public class distributoreditdetails extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jPanel5.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 64, 750, 502));
+
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField1KeyReleased(evt);
+            }
+        });
         jPanel5.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 153, 40));
 
         jLabel5.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
@@ -316,6 +324,10 @@ public class distributoreditdetails extends javax.swing.JFrame {
         
          try {
              int selectedRow = jTable1.getSelectedRow();
+             if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please Select a Row", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
             String DistributorID = jTable1.getValueAt(selectedRow, 0).toString();
             String Name = jTextField4.getText();
             String Mobile = jTextField2.getText();
@@ -323,7 +335,7 @@ public class distributoreditdetails extends javax.swing.JFrame {
             String address = jTextField5.getText();
             //Date date = jDateChooser1.getDate();
             String Nic = jTextField8.getText();
-            //String email = jTextField7.getText();
+            String email = jTextField7.getText();
 
             if (Name.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "PLEASE SELECT A DISTIBUTOR TO UPDATE", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -341,6 +353,8 @@ public class distributoreditdetails extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Please Enter The Address", "Warning", JOptionPane.WARNING_MESSAGE);
             }else if (Nic.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please Enter the NIC", "Warning", JOptionPane.WARNING_MESSAGE);
+            } else if (email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please Enter the Email", "Warning", JOptionPane.WARNING_MESSAGE);
             }else{
 
                 ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `distributor` WHERE `nic` = '" + Nic + "' OR `id`='" + DistributorID + "'");
@@ -361,7 +375,7 @@ public class distributoreditdetails extends javax.swing.JFrame {
 
                 if (canUpdate) {
 
-                    MySQL.executeIUD("UPDATE `distributor` SET `name` = '" + Name + "', `mobile` = '" + Mobile + "', vehicle_no = '" + Vehicle_NO + "' , address = '" + address + "' , nic = '" + Nic + "'"
+                    MySQL.executeIUD("UPDATE `distributor` SET `name` = '" + Name + "', `mobile` = '" + Mobile + "', vehicle_no = '" + Vehicle_NO + "' , address = '" + address + "' , nic = '" + Nic + "' ,email = '" + email + "'  "
                             + "WHERE `id` = '" + DistributorID + "' ");
                     JOptionPane.showMessageDialog(this, "Distributor Details Successfully Updated!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
@@ -440,6 +454,13 @@ public class distributoreditdetails extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         deleteDistributor();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+       DefaultTableModel ob = (DefaultTableModel) jTable1.getModel();
+        TableRowSorter<DefaultTableModel> obj = new TableRowSorter<>(ob);
+        jTable1.setRowSorter(obj);
+        obj.setRowFilter(RowFilter.regexFilter(jTextField1.getText()));
+    }//GEN-LAST:event_jTextField1KeyReleased
 
     /**
      * @param args the command line arguments

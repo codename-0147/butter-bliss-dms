@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package gui;
 
 import java.sql.ResultSet;
@@ -12,10 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.MySQL;
 
-/**
- *
- * @author chath
- */
+
 public class FeedbackOU extends javax.swing.JPanel {
 
     private HomeOU home;
