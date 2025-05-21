@@ -44,6 +44,7 @@ private int totalOrdersCount;
     public Delivery(HomeDB ODB) {
         initComponents();
           ShowData();
+          reset();
         this.ODB = ODB;
         
         totalOrdersCount = calculateTotalOrdersCount();
@@ -174,7 +175,6 @@ private boolean isSameDay(Date date1, Date date2) {
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
@@ -201,7 +201,7 @@ private boolean isSameDay(Date date1, Date date2) {
                 jLabel9MouseClicked(evt);
             }
         });
-        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 10, -1, -1));
+        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 10, -1, -1));
 
         jPanel1.setBackground(new java.awt.Color(255, 248, 244));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -219,19 +219,7 @@ private boolean isSameDay(Date date1, Date date2) {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, 40, 40));
-
-        jButton2.setBackground(new java.awt.Color(249, 233, 222));
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-invoice-38.png"))); // NOI18N
-        jButton2.setText("Order History    ");
-        jButton2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 10, 170, 40));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 10, 40, 40));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -256,20 +244,20 @@ private boolean isSameDay(Date date1, Date date2) {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 700, 230));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 700, 250));
 
-        jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 760, 300));
+        jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 760, 330));
 
         jPanel4.setBackground(new java.awt.Color(255, 244, 229));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton3.setBackground(new java.awt.Color(249, 233, 222));
-        jButton3.setFont(new java.awt.Font("Hiragino Maru Gothic ProN", 1, 14)); // NOI18N
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-delivery-31 copy.png"))); // NOI18N
-        jButton3.setText("Delivery Status   ");
-        jButton3.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
-        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        jButton3.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jButton3.setFont(new java.awt.Font("Lava Telugu", 1, 14)); // NOI18N
+        jButton3.setForeground(new java.awt.Color(153, 102, 0));
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/grnIcon .png"))); // NOI18N
+        jButton3.setText("  Delivery Status   ");
+        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -390,15 +378,10 @@ private boolean isSameDay(Date date1, Date date2) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error generating PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        reset();
     }
 
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        setVisible(true);
-    OrderHistoryDB object = new OrderHistoryDB();
-        object.setVisible(true);   
-    }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         setVisible(true);
@@ -409,7 +392,6 @@ private boolean isSameDay(Date date1, Date date2) {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private com.toedter.calendar.JCalendar jCalendar1;
@@ -423,4 +405,8 @@ private boolean isSameDay(Date date1, Date date2) {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
+private void reset() {
+     jTable1.setEnabled (true);
+   
+}
 }

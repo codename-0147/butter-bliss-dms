@@ -42,9 +42,12 @@ private int totalOrdersCount;
      * Creates new form DistributorDB1
      */
     public DistributorDB1(HomeDB DB) {
+          this.DB = DB;
         initComponents();
+            reset();
         loadFeedbackData();
-        this.DB = DB;
+        Bestdistributor();
+      
         
         jPanel1.setBorder(new RoundBorder(25));
         jPanel4.setBorder(new RoundBorder(25));
@@ -67,7 +70,7 @@ private int totalOrdersCount;
         });
     }
     
-   private int calculateTotalOrdersCount() {
+ public int calculateTotalOrdersCount() {
         int count = 0;
         ResultSet rs = null;
 
@@ -90,7 +93,7 @@ private int totalOrdersCount;
         return count;
     }
 
-    private int calculateDistributorCount() {
+  public int calculateDistributorCount() {
         int count = 0;
         ResultSet rs = null;
 
@@ -113,7 +116,7 @@ private int totalOrdersCount;
         return count;
     }
 
-    private void updateCountsDisplay(int orderCount, int distributorCount) {
+    public void updateCountsDisplay(int orderCount, int distributorCount) {
         
         jButton10.setText("<html><div style='text-align: center;'><span style='font-size:14px;'><b>Total Dispatches </span>"
                           + "<span style='font-size:18px;'>" + orderCount + "</span><br></br></div></html>");
@@ -126,7 +129,7 @@ private int totalOrdersCount;
  
   private void showSpecialOrderNotification(Date selectedDate) {
     Calendar targetCalendar = Calendar.getInstance();
-    targetCalendar.set(2024, Calendar.DECEMBER, 1);  
+    targetCalendar.set(2025, Calendar.DECEMBER, 1);  
     Date targetDate = targetCalendar.getTime();
 
     if (isSameDay(selectedDate, targetDate)) {
@@ -191,7 +194,48 @@ private void loadFeedbackData() {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
     }
+}
+    
+    private void Bestdistributor() {
+    ResultSet rs = null;
+    StringBuilder feedbackContent = new StringBuilder(); 
+
+    try {
+        String query = "SELECT best.date, best.note, distributor.name AS distributor_name, outlet.name AS outlet_name " +
+                       "FROM best " +
+                       "INNER JOIN distributor ON best.distributor_id = distributor.id " +
+                "INNER JOIN outlet ON best.outlet_id = outlet.id " +
+                       "ORDER BY best.date DESC LIMIT 1";
+        rs = MySQL.executeSearch(query);
+
+        while (rs.next()) {
+            String feedbackDate = rs.getString("date");
+            String feedbackNote = rs.getString("note");
+            String distributorName = rs.getString("distributor_name");
+            String outletName = rs.getString("outlet_name");
+            
+            feedbackContent.append("<html><font face='Calibri' size='4'>")
+                           .append("<div style='text-align:center;'><b><span style='color:brown;'>")
+                           .append(feedbackDate).append("</span>:</b></div>")
+                           .append("<div style='text-align:center;'><span style='color:blue;'>")
+                           .append(distributorName).append("</span></div>") // Display distributor name
+                           .append("<div style='text-align:center;'><span style='color:red;'>")
+                           .append(feedbackNote).append("</span></div><br></font></html>");
+        }
+
+        jLabel14.setText(feedbackContent.toString());
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
 
 
@@ -297,6 +341,11 @@ private void loadFeedbackData() {
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         jButton1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -377,13 +426,19 @@ private void loadFeedbackData() {
         jPanel4.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 210, 30));
 
         jLabel14.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 102, 0)));
+        jLabel14.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel14MouseClicked(evt);
+            }
+        });
         jPanel4.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 230, 70));
 
         jPanel5.setBackground(new java.awt.Color(252, 244, 238));
 
         jLabel15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/vehicle.png"))); // NOI18N
 
-        jButton3.setText("Outlet Name");
+        jButton3.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jButton3.setText("Distributor Mobile");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -412,17 +467,14 @@ private void loadFeedbackData() {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jTextField2)
-                        .addGap(121, 121, 121))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 5, Short.MAX_VALUE)
                         .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel19)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel19))
+                        .addGap(7, 7, 7))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel16)
@@ -433,7 +485,12 @@ private void loadFeedbackData() {
                             .addComponent(jTextField3)
                             .addComponent(jTextField4)
                             .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3)
+                        .addGap(0, 6, Short.MAX_VALUE))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -503,7 +560,7 @@ private void loadFeedbackData() {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 816, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -537,7 +594,7 @@ private void loadFeedbackData() {
 
             } else {
                 JOptionPane.showMessageDialog(this, "No Distributor found with the given Address or Mobile", "Search Result", JOptionPane.WARNING_MESSAGE);
-
+    reset();
             }
 
         } catch (Exception e) {
@@ -554,18 +611,28 @@ private void loadFeedbackData() {
     }//GEN-LAST:event_jPanel1MouseClicked
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // TODO add your handling code here:
+       reset();
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         setVisible(true);
         RegistorDistributor object = new RegistorDistributor();
         object.setVisible(true);
+   reset();
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
         this.DB.removedistributorPanel();
     }//GEN-LAST:event_jLabel9MouseClicked
+
+    private void jLabel14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel14MouseClicked
+     Bestdistributor();
+    }//GEN-LAST:event_jLabel14MouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+reset();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -599,4 +666,15 @@ private void loadFeedbackData() {
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     // End of variables declaration//GEN-END:variables
+private void reset() {
+    jTextField2.setText("");
+    jTextField3.setText("");
+    jTextField5.setText("");
+     jButton1.setEnabled(true);
+   jButton2.setEnabled(true);
+    jButton10.setEnabled(true);
+    jLabel12.setText(null);
+    jLabel14.setText(null);
+    
+}
 }

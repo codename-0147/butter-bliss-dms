@@ -8,6 +8,6 @@ package gui;
  *
  * @author rid
  */
-public class Login {
-
+class SQLException {
+    
 }

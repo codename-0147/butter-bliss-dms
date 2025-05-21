@@ -232,7 +232,7 @@ private boolean validatePassword(String password) {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE))
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(25, 25, 25)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -275,7 +275,7 @@ private boolean validatePassword(String password) {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
                             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addGap(18, 28, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(nic)
                             .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -419,7 +419,7 @@ private boolean validatePassword(String password) {
 
         jTextField2.setEditable(true);
 
-     
+      jLabel7.setIcon(null);
         reset();
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -428,10 +428,13 @@ private boolean validatePassword(String password) {
     }//GEN-LAST:event_jLabel17MouseClicked
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        int a = JOptionPane.showConfirmDialog(null, "Do you  want to close Distributor Registration Form ", "Select", JOptionPane.YES_NO_CANCEL_OPTION);
-        if (a == 0) {
-            System.exit(0);
-        }
+                                             
+    int a = JOptionPane.showConfirmDialog(null, "Do you want to close Distributor Registration Form?", "Select", JOptionPane.YES_NO_CANCEL_OPTION);
+    if (a == JOptionPane.YES_OPTION) {
+        this.dispose(); // Only close this JFrame
+    }
+
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     /**

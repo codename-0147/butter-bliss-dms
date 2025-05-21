@@ -38,48 +38,41 @@ public class ReturnReasonDB extends javax.swing.JDialog {
         ReturnShowData();
     }
 private void ReturnShowData() {
-    try {
-        ResultSet resultSet = MySQL.executeSearch(
-            "SELECT " +
-            "`return_invoice`.`id` AS return_id, " +
-            "`outlet`.`name` AS outlet_name, " +
-            "`w_product`.`name` AS product_name, " + 
-            "`w_product`.`price` AS product_price, " + 
-            "`return_invoice_items`.`qty` AS quantity, " +
-            "`reason`.`reason` AS return_reason, " +
-            "`delivery`.`delivery_date` AS delivery_date " +
-            "FROM `return_invoice` " +
-            "INNER JOIN `return_invoice_items` ON `return_invoice`.`id` = `return_invoice_items`.`return_invoice_id` " +
-            "INNER JOIN `w_product` ON `return_invoice_items`.`w_product_id` = `w_product`.`id` " + 
-           
-            "INNER JOIN `delivery` ON `return_invoice`.`delivery_id` = `delivery`.`id` " +
-            "INNER JOIN `outlet` ON `return_invoice`.`outlet_id` = `outlet`.`id` " +
-            "INNER JOIN `reason` ON `return_invoice`.`reason_id` = `reason`.`id`"
-        );
+ 
 
-     
-        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
-        model.setRowCount(0);
+        try {
+            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `return_invoice`"
+                    + "INNER JOIN `outlet` ON `return_invoice`.`outlet_id` = `outlet`.`id`"
+                    + "INNER JOIN `distributor` ON `return_invoice`.`distributor_id` = `distributor`.`id`"
+                
+                    + "INNER JOIN `reason` ON `return_invoice`.`reason_id` = `reason`.`id` "
+                    + "INNER JOIN `return_invoice_status` ON `return_invoice`.`return_invoice_status_id` = `return_invoice_status`.`id`");
 
-        
-        while (resultSet.next()) {
-            Vector<String> vector = new Vector<>();
-            vector.add(resultSet.getString("return_id")); 
-            vector.add(resultSet.getString("outlet_name")); 
-            vector.add(resultSet.getString("product_name")); 
-            vector.add(resultSet.getString("quantity")); 
-            vector.add(resultSet.getString("return_reason")); 
-            vector.add(resultSet.getString("delivery_date")); 
-            vector.add(resultSet.getString("product_price")); 
+            DefaultTableModel dtm = (DefaultTableModel) jTable2.getModel();
+            dtm.setRowCount(0);
 
-            model.addRow(vector);
+            while (resultSet.next()) {
+                Vector vector = new Vector();
+                vector.add(resultSet.getString("id"));
+                vector.add(resultSet.getString("date"));
+         
+                vector.add(resultSet.getString("outlet.name"));
+                 vector.add(resultSet.getString("reason.reason"));
+                vector.add(resultSet.getString("distributor.name"));
+                vector.add(resultSet.getString("distributor.vehicle_no"));
+                vector.add(resultSet.getString("total_amount"));
+                vector.add(resultSet.getString("return_invoice_status.name"));
+
+                dtm.addRow(vector);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
 
+    
 }
-
 
 
 
@@ -111,27 +104,27 @@ private void ReturnShowData() {
         jLabel1.setForeground(new java.awt.Color(102, 51, 0));
         jLabel1.setText(" Return Invoice");
 
-        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file (1).png"))); // NOI18N
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file (1)_1.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(25, 25, 25)
                 .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel6)
                     .addComponent(jLabel1))
-                .addGap(20, 20, 20))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -164,11 +157,11 @@ private void ReturnShowData() {
 
             },
             new String [] {
-                "Return Invoice ID", "Outlet Name", "Product Name", "Qty.", "Return Reason", "Delivery Date", "Price"
+                "Return Invoice ID", "Date", "Outlet Name", "Return Reason", "Distributor", "Vehicle_no", "Price", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -191,14 +184,13 @@ private void ReturnShowData() {
                 .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton1)
-                .addGap(291, 291, 291)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 351, Short.MAX_VALUE)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(80, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                    .addContainerGap(22, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 667, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(23, 23, 23)))
+                .addGap(59, 59, 59))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -208,26 +200,26 @@ private void ReturnShowData() {
                     .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(420, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addGap(68, 68, 68)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(21, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -263,21 +255,18 @@ private void ReturnShowData() {
         
         
         ResultSet resultSet = MySQL.executeSearch(
-            "SELECT " +
-            "`return_invoice`.`id` AS return_id, " +
-            "`outlet`.`name` AS outlet_name, " +
-            "`w_product`.`name` AS product_name, " + 
-            "`w_product`.`price` AS product_price, " + 
-            "`return_invoice_items`.`qty` AS quantity, " +
-            "`reason`.`reason` AS return_reason, " +
-            "`delivery`.`delivery_date` AS delivery_date " +
-            "FROM `return_invoice` " +
-            "INNER JOIN `return_invoice_items` ON `return_invoice`.`id` = `return_invoice_items`.`return_invoice_id` " +
-            "INNER JOIN `w_product` ON `return_invoice_items`.`w_product_id` = `w_product`.`id` " + 
-           
-            "INNER JOIN `delivery` ON `return_invoice`.`delivery_id` = `delivery`.`id` " +
-            "INNER JOIN `outlet` ON `return_invoice`.`outlet_id` = `outlet`.`id` " +
-            "INNER JOIN `reason` ON `return_invoice`.`reason_id` = `reason`.`id` WHERE delivery_date='" + date + "'"
+             "SELECT " +
+            "ri.id AS return_id, " +
+            "o.name AS outlet_name, " +
+            "p.name AS product_name, " +
+            "rii.qty AS quantity, " +
+            "r.reason AS return_reason, " +
+            "ri.total_amount " +
+            "FROM return_invoice ri " +
+            "JOIN outlet o ON ri.outlet_id = o.id " +
+            "JOIN reason r ON ri.reason_id = r.id " +
+            "JOIN return_invoice_items rii ON ri.id = rii.return_invoice_id " +
+            "JOIN product p ON rii.stock_id = p.id"
         );
 
         DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
