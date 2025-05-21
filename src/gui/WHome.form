@@ -25,7 +25,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel2" max="32767" attributes="0"/>
                   <Component id="loadPanel" max="32767" attributes="0"/>
@@ -38,7 +38,7 @@
           <Component id="jPanel1" max="32767" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Component id="loadPanel" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -64,7 +64,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="ordersButton" alignment="0" max="32767" attributes="0"/>
-                      <Component id="packingButton" alignment="1" max="32767" attributes="0"/>
+                      <Component id="grnButton" alignment="1" max="32767" attributes="0"/>
                       <Component id="inventoryButton" alignment="1" max="32767" attributes="0"/>
                       <Component id="returnsButton" alignment="0" max="32767" attributes="0"/>
                       <Component id="invoiceButton" alignment="1" max="32767" attributes="0"/>
@@ -118,20 +118,20 @@
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="invoiceButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="packingButton" min="-2" max="-2" attributes="0"/>
+                  <Component id="grnButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="inventoryButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="returnsButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="backupNRestoreButton" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="37" max="32767" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="helpNReportsButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="logoutButton" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -199,7 +199,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ordersButtonActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="packingButton">
+        <Component class="javax.swing.JButton" name="grnButton">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="c8" green="db" red="f5" type="rgb"/>
@@ -210,8 +210,11 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/resources/packing-icon.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Packing"/>
+            <Property name="text" type="java.lang.String" value="GRN"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="grnButtonActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="inventoryButton">
           <Properties>
@@ -368,7 +371,7 @@
                   <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="usernameLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="456" max="32767" attributes="0"/>
+                  <EmptySpace pref="462" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="emailLabel" max="32767" attributes="0"/>
                       <Component id="dateTimeLabel" pref="180" max="32767" attributes="0"/>

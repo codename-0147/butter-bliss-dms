@@ -22,6 +22,7 @@ public class WHome extends javax.swing.JFrame {
     public static WDashboard dashboard;
     public static WOrders orders;
     public static WInvoice invoice;
+    public static WGrn grn;
     public static WProducts inventory;
     public static WReturns returns;
     public static BackupNRestore backupNRestore;
@@ -62,7 +63,7 @@ public class WHome extends javax.swing.JFrame {
                         dashboardButton.setText("");
                         ordersButton.setText("");
                         invoiceButton.setText("");
-                        packingButton.setText("");
+                        grnButton.setText("");
                         inventoryButton.setText("");
                         returnsButton.setText("");
                         backupNRestoreButton.setText("");
@@ -94,7 +95,7 @@ public class WHome extends javax.swing.JFrame {
                         dashboardButton.setText("Dashboard");
                         ordersButton.setText("Orders");
                         invoiceButton.setText("Invoice");
-                        packingButton.setText("Packing");
+                        grnButton.setText("Packing");
                         inventoryButton.setText("Inventory");
                         returnsButton.setText("Returns");
                         backupNRestoreButton.setText("Backup & Restore");
@@ -182,6 +183,25 @@ public class WHome extends javax.swing.JFrame {
         SwingUtilities.updateComponentTreeUI(loadPanel);
     }
     
+    public void addGrn() {
+        if (grn == null) {
+            loadPanel.removeAll();
+            grn = new WGrn(this);
+            loadPanel.add(grn, BorderLayout.CENTER);
+            SwingUtilities.updateComponentTreeUI(loadPanel);
+        }else {
+            loadPanel.removeAll();
+            loadPanel.add(grn, BorderLayout.CENTER);
+            SwingUtilities.updateComponentTreeUI(loadPanel);
+        }
+    }
+    
+    public void removeGrn() {
+        loadPanel.remove(grn);
+        grn = null;
+        SwingUtilities.updateComponentTreeUI(loadPanel);
+    }
+    
     public void addInventory() {
         if (inventory == null) {
             loadPanel.removeAll();
@@ -254,7 +274,7 @@ public class WHome extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         dashboardButton = new javax.swing.JButton();
         ordersButton = new javax.swing.JButton();
-        packingButton = new javax.swing.JButton();
+        grnButton = new javax.swing.JButton();
         inventoryButton = new javax.swing.JButton();
         returnsButton = new javax.swing.JButton();
         invoiceButton = new javax.swing.JButton();
@@ -285,13 +305,11 @@ public class WHome extends javax.swing.JFrame {
         jLabel2.setText("Butter Bliss");
 
         jLabel4.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Warehouse Management System");
 
         dashboardButton.setBackground(new java.awt.Color(245, 219, 200));
         dashboardButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        dashboardButton.setForeground(new java.awt.Color(0, 0, 0));
         dashboardButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/overview-icon.png"))); // NOI18N
         dashboardButton.setText("Dashboard");
         dashboardButton.addActionListener(new java.awt.event.ActionListener() {
@@ -302,7 +320,6 @@ public class WHome extends javax.swing.JFrame {
 
         ordersButton.setBackground(new java.awt.Color(245, 219, 200));
         ordersButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        ordersButton.setForeground(new java.awt.Color(0, 0, 0));
         ordersButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/orders-icon.png"))); // NOI18N
         ordersButton.setText("Orders");
         ordersButton.addActionListener(new java.awt.event.ActionListener() {
@@ -311,15 +328,18 @@ public class WHome extends javax.swing.JFrame {
             }
         });
 
-        packingButton.setBackground(new java.awt.Color(245, 219, 200));
-        packingButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        packingButton.setForeground(new java.awt.Color(0, 0, 0));
-        packingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/packing-icon.png"))); // NOI18N
-        packingButton.setText("Packing");
+        grnButton.setBackground(new java.awt.Color(245, 219, 200));
+        grnButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
+        grnButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/packing-icon.png"))); // NOI18N
+        grnButton.setText("GRN");
+        grnButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                grnButtonActionPerformed(evt);
+            }
+        });
 
         inventoryButton.setBackground(new java.awt.Color(245, 219, 200));
         inventoryButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        inventoryButton.setForeground(new java.awt.Color(0, 0, 0));
         inventoryButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/products-icon.png"))); // NOI18N
         inventoryButton.setText("Products");
         inventoryButton.addActionListener(new java.awt.event.ActionListener() {
@@ -330,7 +350,6 @@ public class WHome extends javax.swing.JFrame {
 
         returnsButton.setBackground(new java.awt.Color(245, 219, 200));
         returnsButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        returnsButton.setForeground(new java.awt.Color(0, 0, 0));
         returnsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/returns-icon.png"))); // NOI18N
         returnsButton.setText("Returns");
         returnsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -341,7 +360,6 @@ public class WHome extends javax.swing.JFrame {
 
         invoiceButton.setBackground(new java.awt.Color(245, 219, 200));
         invoiceButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        invoiceButton.setForeground(new java.awt.Color(0, 0, 0));
         invoiceButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/invoice-icon.png"))); // NOI18N
         invoiceButton.setText("Invoice");
         invoiceButton.addActionListener(new java.awt.event.ActionListener() {
@@ -356,13 +374,11 @@ public class WHome extends javax.swing.JFrame {
 
         helpNReportsButton.setBackground(new java.awt.Color(245, 219, 200));
         helpNReportsButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        helpNReportsButton.setForeground(new java.awt.Color(0, 0, 0));
         helpNReportsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/help-icon.png"))); // NOI18N
         helpNReportsButton.setText("Help & Reports");
 
         logoutButton.setBackground(new java.awt.Color(245, 219, 200));
         logoutButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        logoutButton.setForeground(new java.awt.Color(0, 0, 0));
         logoutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/logout-icon.png"))); // NOI18N
         logoutButton.setText("Logout");
 
@@ -384,7 +400,6 @@ public class WHome extends javax.swing.JFrame {
 
         backupNRestoreButton.setBackground(new java.awt.Color(245, 219, 200));
         backupNRestoreButton.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        backupNRestoreButton.setForeground(new java.awt.Color(0, 0, 0));
         backupNRestoreButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/database-icon.png"))); // NOI18N
         backupNRestoreButton.setText("Backup & Restore");
         backupNRestoreButton.addActionListener(new java.awt.event.ActionListener() {
@@ -401,7 +416,7 @@ public class WHome extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ordersButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(packingButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(grnButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(inventoryButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(returnsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(invoiceButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -445,20 +460,20 @@ public class WHome extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(invoiceButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(packingButton)
+                .addComponent(grnButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(inventoryButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(returnsButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(backupNRestoreButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(helpNReportsButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(logoutButton)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 246, 237));
@@ -469,12 +484,10 @@ public class WHome extends javax.swing.JFrame {
         userButton.setBorder(null);
 
         usernameLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        usernameLabel.setForeground(new java.awt.Color(0, 0, 0));
         usernameLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         usernameLabel.setText("Username");
 
         dateTimeLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        dateTimeLabel.setForeground(new java.awt.Color(0, 0, 0));
         dateTimeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         dateTimeLabel.setText("Date/Time");
 
@@ -483,7 +496,6 @@ public class WHome extends javax.swing.JFrame {
         jLabel6.setText("WELCOME!");
 
         emailLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        emailLabel.setForeground(new java.awt.Color(0, 0, 0));
         emailLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         emailLabel.setText("Email");
 
@@ -496,7 +508,7 @@ public class WHome extends javax.swing.JFrame {
                 .addComponent(jLabel6)
                 .addGap(18, 18, 18)
                 .addComponent(usernameLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 456, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 462, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(emailLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(dateTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
@@ -528,7 +540,7 @@ public class WHome extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(loadPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -538,7 +550,7 @@ public class WHome extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addComponent(loadPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -578,6 +590,10 @@ public class WHome extends javax.swing.JFrame {
         addBackupNRestore();
     }//GEN-LAST:event_backupNRestoreButtonActionPerformed
 
+    private void grnButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_grnButtonActionPerformed
+        addGrn();
+    }//GEN-LAST:event_grnButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -614,6 +630,7 @@ public class WHome extends javax.swing.JFrame {
     private javax.swing.JButton dashboardButton;
     private javax.swing.JLabel dateTimeLabel;
     private javax.swing.JLabel emailLabel;
+    private javax.swing.JButton grnButton;
     private javax.swing.JButton helpNReportsButton;
     private javax.swing.JButton inventoryButton;
     private javax.swing.JButton invoiceButton;
@@ -628,7 +645,6 @@ public class WHome extends javax.swing.JFrame {
     private javax.swing.JPanel loadPanel;
     private javax.swing.JButton logoutButton;
     private javax.swing.JButton ordersButton;
-    private javax.swing.JButton packingButton;
     private javax.swing.JButton returnsButton;
     private javax.swing.JButton rightMenuButton;
     private javax.swing.JButton userButton;

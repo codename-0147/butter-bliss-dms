@@ -4,9 +4,12 @@
  */
 package gui;
 
+//import static gui.SignIn.logger;
 import model.MySQL;
 import java.sql.ResultSet;
 import java.util.Vector;
+//import java.util.logging.Level;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -15,38 +18,36 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author barth
  */
-public class WSelectReturnSlip extends javax.swing.JDialog {
-    private WReturns returns;
+public class SelectSupplier extends javax.swing.JDialog {
+    private WGrn wGrn;
 
     /**
      * Creates new form CompanyRegistration
      */
-    public WSelectReturnSlip(java.awt.Frame parent, boolean modal, WReturns returns) {
+    public SelectSupplier(java.awt.Frame parent, boolean modal, WGrn wGrn) {
         super(parent, modal);
-        this.returns = returns;
+        this.wGrn = wGrn;
         initComponents();
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
-        pendingReturnSlipTable.setDefaultRenderer(Object.class, renderer);
-        loadPendingReturnSlips();
+        suppliersTable.setDefaultRenderer(Object.class, renderer);
+        loadSuppliers();
     }
     
-    private void loadPendingReturnSlips() {
+    private void loadSuppliers() {
         try {
-            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `return_slip` INNER JOIN `return_invoice` "
-                    + "ON `return_slip`.`return_invoice_id` = `return_invoice`.`id` INNER JOIN `outlet` "
-                    + "ON `return_invoice`.`outlet_id` = `outlet`.`id` INNER JOIN `return_slip_status` "
-                    + "ON `return_slip`.`return_slip_status_id` = `return_slip_status`.`id` "
-                    + "WHERE `return_slip_status`.`name` = 'Pending'");
-            DefaultTableModel model = (DefaultTableModel) pendingReturnSlipTable.getModel();
+            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `supplier` INNER JOIN `company` "
+                    + "ON `supplier`.`company_id` = `company`.`id`");
+            DefaultTableModel model = (DefaultTableModel)suppliersTable.getModel();
             model.setRowCount(0);
             
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
-                vector.add(resultSet.getString("return_slip.id"));
-                vector.add(resultSet.getString("return_invoice.id"));
-                vector.add(resultSet.getString("outlet.name"));
-                vector.add(resultSet.getString("return_invoice.date"));
+                vector.add(resultSet.getString("mobile"));
+                vector.add(resultSet.getString("first_name"));
+                vector.add(resultSet.getString("last_name"));
+                vector.add(resultSet.getString("email"));
+                vector.add(resultSet.getString("company.name"));
                 model.addRow(vector);
             }
         } catch (Exception e) {
@@ -67,17 +68,24 @@ public class WSelectReturnSlip extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        pendingReturnSlipTable = new javax.swing.JTable();
+        suppliersTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Select Outlet");
+        setTitle("Select Supplier");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
-        jPanel1.setBackground(new java.awt.Color(245, 219, 200));
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel1.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(66, 45, 22));
-        jLabel1.setText("Select Return Slip");
+        jLabel1.setText("Select Supplier");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -86,41 +94,41 @@ public class WSelectReturnSlip extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        pendingReturnSlipTable.setModel(new javax.swing.table.DefaultTableModel(
+        suppliersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Slip ID", "Ret. Inv. ID", "Outlet Name", "Date"
+                "Mobile", "First Name", "Last Name", "Email", "Company"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, true, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        pendingReturnSlipTable.getTableHeader().setReorderingAllowed(false);
-        pendingReturnSlipTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        suppliersTable.getTableHeader().setReorderingAllowed(false);
+        suppliersTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                pendingReturnSlipTableMouseClicked(evt);
+                suppliersTableMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(pendingReturnSlipTable);
+        jScrollPane1.setViewportView(suppliersTable);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -128,14 +136,14 @@ public class WSelectReturnSlip extends javax.swing.JDialog {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -158,35 +166,26 @@ public class WSelectReturnSlip extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void pendingReturnSlipTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pendingReturnSlipTableMouseClicked
+    private void suppliersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_suppliersTableMouseClicked
         //logger.log(Level.INFO, "MouseEvent");
-        int row = pendingReturnSlipTable.getSelectedRow();
+        int row = suppliersTable.getSelectedRow();
         
         if (evt.getClickCount() == 2) {
-            try {
-                if (returns != null) {
-                    returns.getslipIDField().setText(String.valueOf(pendingReturnSlipTable.getValueAt(row, 0)));
-                    returns.getreturnInvoiceIDField().setText(String.valueOf(pendingReturnSlipTable.getValueAt(row, 1)));
-                    returns.getoutletNameLabel().setText(String.valueOf(pendingReturnSlipTable.getValueAt(row, 2)));
-                    returns.getdateLabel().setText(String.valueOf(pendingReturnSlipTable.getValueAt(row, 3)));
-                    
-                    ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `return_slip` INNER JOIN `return_invoice` "
-                            + "ON `return_slip`.`return_invoice_id` = `return_invoice`.`id` INNER JOIN `outlet` "
-                            + "ON `return_invoice`.`outlet_id` = `outlet`.`id` INNER JOIN `distributor` "
-                            + "ON `return_invoice`.`distributor_id` = `distributor`.`id` "
-                            + "WHERE `return_slip`.`id` = '"+String.valueOf(pendingReturnSlipTable.getValueAt(row, 0))+"'");
-                    
-                    returns.getoutletAddressLabel().setText(resultSet.getString("outlet.address"));
-                    returns.getvehicleNumberLabel().setText(resultSet.getString("distributor.vehicle_no"));
-                    returns.getoutletManagerIDField().setText(resultSet.getString("return_slip.outlet_manager_id"));
-                    
-                    this.dispose();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (wGrn != null) {
+                wGrn.getSupplierMobileField().setText(String.valueOf(suppliersTable.getValueAt(row, 0)));
+                wGrn.getSupplierNameLabel().setText(String.valueOf(suppliersTable.getValueAt(row, 1)) + " " + String.valueOf(suppliersTable.getValueAt(row, 2)));
+                this.dispose();
             }
         }
-    }//GEN-LAST:event_pendingReturnSlipTableMouseClicked
+    }//GEN-LAST:event_suppliersTableMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        //logger.log(Level.INFO, "WindowEvent");
+    }//GEN-LAST:event_formWindowOpened
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        //logger.log(Level.INFO, "WindowEvent");
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments
@@ -197,6 +196,6 @@ public class WSelectReturnSlip extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable pendingReturnSlipTable;
+    private javax.swing.JTable suppliersTable;
     // End of variables declaration//GEN-END:variables
 }

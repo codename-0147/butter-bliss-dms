@@ -4,8 +4,13 @@
  */
 package gui;
 
+import java.awt.BorderLayout;
 import java.sql.ResultSet;
 import model.MySQL;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  *
@@ -21,6 +26,7 @@ public class WDashboard extends javax.swing.JPanel {
         initComponents();
         this.home = home;
         loadPendingOrdersCount();
+        loadLineChart();
     }
     
     private void loadPendingOrdersCount() {
@@ -37,6 +43,113 @@ public class WDashboard extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
+    
+    private void loadLineChart() {
+        try {
+            if (chartTypeComboBox.getSelectedItem().equals("Sales")) {
+                ResultSet resultSet = MySQL.executeSearch("SELECT SUM(`w_invoice`.`total_price`-`discount`), "
+                    + "MONTH(DATE(`w_invoice`.`date`)) FROM `w_invoice` WHERE YEAR(DATE(`w_invoice`.`date`)) = YEAR(CURDATE()) "
+                    + "GROUP BY MONTH(DATE(`w_invoice`.`date`))");
+
+                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+                while (resultSet.next()) {
+                    Double amount = Double.parseDouble(resultSet.getString("SUM(`w_invoice`.`total_price`-`discount`)"));
+                    String month = "";
+
+                    if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("1")) {
+                        month = "January";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("2")) {
+                        month = "February";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("3")) {
+                        month = "March";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("4")) {
+                        month = "April";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("5")) {
+                        month = "May";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("6")) {
+                        month = "June";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("7")) {
+                        month = "July";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("8")) {
+                        month = "August";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("9")) {
+                        month = "September";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("10")) {
+                        month = "October";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("11")) {
+                        month = "November";
+                    }else if (resultSet.getString("MONTH(DATE(`w_invoice`.`date`))").equals("12")) {
+                        month = "December";
+                    }
+
+                    dataset.addValue(amount, "Sales", month);
+                }
+
+                JFreeChart chart = ChartFactory.createLineChart(
+                "Monthly Sales",
+                "Month",
+                "Sales",
+                dataset);
+
+                ChartPanel chartPanel = new ChartPanel(chart);
+                chartLoadingPanel.removeAll();
+                chartLoadingPanel.add(chartPanel, BorderLayout.CENTER);
+                chartLoadingPanel.validate();
+            }else if (chartTypeComboBox.getSelectedItem().equals("Order Trends")) {
+                ResultSet resultSet = MySQL.executeSearch("SELECT COUNT(*), MONTH(DATE(`date`)) FROM `order` "
+                        + "WHERE YEAR(DATE(`date`)) = YEAR(CURDATE()) GROUP BY MONTH(DATE(`date`))");
+
+                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+                while (resultSet.next()) {
+                    Double count = Double.parseDouble(resultSet.getString("COUNT(*)"));
+                    String month = "";
+
+                    if (resultSet.getString("MONTH(DATE(`date`))").equals("1")) {
+                        month = "January";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("2")) {
+                        month = "February";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("3")) {
+                        month = "March";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("4")) {
+                        month = "April";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("5")) {
+                        month = "May";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("6")) {
+                        month = "June";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("7")) {
+                        month = "July";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("8")) {
+                        month = "August";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("9")) {
+                        month = "September";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("10")) {
+                        month = "October";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("11")) {
+                        month = "November";
+                    }else if (resultSet.getString("MONTH(DATE(`date`))").equals("12")) {
+                        month = "December";
+                    }
+
+                    dataset.addValue(count, "Orders", month);
+                }
+
+                JFreeChart chart = ChartFactory.createLineChart(
+                "Monthly Orders",
+                "Month",
+                "Orders",
+                dataset);
+
+                ChartPanel chartPanel = new ChartPanel(chart);
+                chartLoadingPanel.removeAll();
+                chartLoadingPanel.add(chartPanel, BorderLayout.CENTER);
+                chartLoadingPanel.validate();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -48,8 +161,6 @@ public class WDashboard extends javax.swing.JPanel {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
@@ -61,18 +172,11 @@ public class WDashboard extends javax.swing.JPanel {
         pendingOrdersCountLabel = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        chartTypeComboBox = new javax.swing.JComboBox<>();
+        jLabel4 = new javax.swing.JLabel();
+        chartLoadingPanel = new javax.swing.JPanel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel4.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(94, 0, 0));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Sales & Order Trends");
-
-        jLabel5.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(94, 0, 0));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Inventory Breakdown by Products");
 
         jButton2.setBackground(new java.awt.Color(252, 171, 77));
         jButton2.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
@@ -138,7 +242,7 @@ public class WDashboard extends javax.swing.JPanel {
             .addGroup(pendingOrdersPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pendingOrdersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
                     .addGroup(pendingOrdersPanelLayout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addGap(18, 18, 18)
@@ -164,38 +268,51 @@ public class WDashboard extends javax.swing.JPanel {
         jButton1.setForeground(new java.awt.Color(0, 0, 0));
         jButton1.setText("Distributor Dashboard");
 
+        chartTypeComboBox.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        chartTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sales", "Order Trends" }));
+        chartTypeComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                chartTypeComboBoxItemStateChanged(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(94, 0, 0));
+        jLabel4.setText("Sales");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(closeLabel)
-                .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(36, 36, 36)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(130, 130, 130)
-                            .addComponent(jLabel5))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(pendingOrdersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGap(18, 18, 18)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addComponent(pendingOrdersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(64, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(closeLabel))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chartTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -217,24 +334,30 @@ public class WDashboard extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(pendingOrdersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(58, 58, 58)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 166, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(35, 35, 35))
+                    .addComponent(jButton1)
+                    .addComponent(chartTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        chartLoadingPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        chartLoadingPanel.setLayout(new java.awt.BorderLayout());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(chartLoadingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(chartLoadingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -246,8 +369,14 @@ public class WDashboard extends javax.swing.JPanel {
         this.home.addOrders();
     }//GEN-LAST:event_pendingOrdersPanelMouseClicked
 
+    private void chartTypeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chartTypeComboBoxItemStateChanged
+        loadLineChart();
+    }//GEN-LAST:event_chartTypeComboBoxItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel chartLoadingPanel;
+    private javax.swing.JComboBox<String> chartTypeComboBox;
     private javax.swing.JLabel closeLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -256,7 +385,6 @@ public class WDashboard extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;

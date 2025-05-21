@@ -17,9 +17,9 @@ public class HomeOU extends javax.swing.JFrame {
     public static FeedbackOU fb;
     public static Product p;
     private outletReport or;
-    private outletSales1 os;
-    private returnDamage rd;
-    private PanelNavigator navigator;
+
+    private outletSales os;
+    private OutletReturns oret;
 
     public HomeOU() {
         initComponents();
@@ -252,23 +252,25 @@ public class HomeOU extends javax.swing.JFrame {
         SwingUtilities.updateComponentTreeUI(jPanel2);
     }
 
-    public void addreturnDamage() {
 
-        if (rd == null) {
-            rd = new returnDamage(this);
-            jPanel2.add(rd, BorderLayout.CENTER);
-            SwingUtilities.updateComponentTreeUI(jPanel2);
+    public void addReturns(){
+    
+        if (oret == null) {
+          oret = new OutletReturns(this);
+          jPanel2.add(oret,BorderLayout.CENTER);
+          SwingUtilities.updateComponentTreeUI(jPanel2);  
         } else {
             jPanel2.removeAll();
-            jPanel2.add(rd, BorderLayout.CENTER);
+            jPanel2.add(oret,BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel2);
         }
 
     }
 
-    public void removereturnDamage() {
-        jPanel2.remove(rd);
-        rd = null;
+    
+    public void removeReturns() {
+        jPanel2.remove(oret);
+        oret = null;
         SwingUtilities.updateComponentTreeUI(jPanel2);
     }
 
@@ -783,7 +785,7 @@ public class HomeOU extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton17ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        addreturnDamage();
+        addReturns();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed

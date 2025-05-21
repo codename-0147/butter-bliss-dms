@@ -167,8 +167,8 @@ public class WSelectOrder extends javax.swing.JDialog {
                     invoice.getoutletNameLabel().setText(String.valueOf(pendingOrdersTable.getValueAt(row, 1)));
                     
                     ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
-                            + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `w_product` "
-                            + "ON `order_items`.`w_product_id` = `w_product`.`id` "
+                            + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `product` "
+                            + "ON `order_items`.`product_id` = `product`.`id` "
                             + "WHERE `order`.`id` = '"+String.valueOf(pendingOrdersTable.getValueAt(row, 0))+"'");
                 
                     DefaultTableModel model = (DefaultTableModel) invoice.getinvoiceItemTable().getModel();
@@ -177,11 +177,11 @@ public class WSelectOrder extends javax.swing.JDialog {
 
                     while (resultSet.next()) {
                         Vector<String> vector = new Vector<>();
-                        vector.add(resultSet.getString("w_product.id"));
-                        vector.add(resultSet.getString("w_product.name"));
+                        vector.add(resultSet.getString("product.id"));
+                        vector.add(resultSet.getString("product.name"));
                         vector.add(resultSet.getString("order_items.qty"));
-                        vector.add(resultSet.getString("w_product.price"));
-                        double itemTotal = Double.parseDouble(resultSet.getString("order_items.qty")) * Double.parseDouble(resultSet.getString("w_product.price"));
+                        vector.add(resultSet.getString("product.price"));
+                        double itemTotal = Double.parseDouble(resultSet.getString("order_items.qty")) * Double.parseDouble(resultSet.getString("product.price"));
                         total += itemTotal;
                         vector.add(String.valueOf(itemTotal));
                         model.addRow(vector);

@@ -475,6 +475,18 @@ public class WInvoice extends javax.swing.JPanel {
                     MySQL.executeIUD("INSERT INTO `w_invoice` VALUES('"+invoiceID+"', '"+dateTime+"', '"+total+"', "
                             + "'"+discount+"', '"+wSupervisorID+"', '"+orderID+"', '"+distributorID+"')");
                     
+                    ResultSet resultSet1 = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
+                            + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `product` "
+                            + "ON `order_items`.`product_id` = `product`.`id` "
+                            + "INNER JOIN `category` ON `product`.`category_id` = `category`.`id` "
+                            + "WHERE `order`.`id` = '"+orderIDField.getText()+"' "
+                            + "AND `category`.`name` = 'Drinks'");
+                    
+                    while (resultSet1.next()) {
+                        MySQL.executeIUD("UPDATE `w_stock` SET `qty` = `qty`-'"+resultSet1.getString("order_items.qty")+"' "
+                                + "WHERE `w_stock`.`product_id` = '"+resultSet1.getString("product.id")+"'");
+                    }
+                            
                     InputStream path = this.getClass().getResourceAsStream("/reports/w_invoice.jasper");
                     HashMap<String, Object> parameters = new HashMap<>();
                     parameters.put("Parameter1", wSupervisorIDLabel.getText());

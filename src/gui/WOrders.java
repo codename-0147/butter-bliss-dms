@@ -4,12 +4,19 @@
  */
 package gui;
 
+import java.io.InputStream;
 import model.MySQL;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -169,6 +176,11 @@ public class WOrders extends javax.swing.JPanel {
         viewButton.setForeground(new java.awt.Color(0, 0, 0));
         viewButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/view-icon.png"))); // NOI18N
         viewButton.setText("View");
+        viewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewButtonActionPerformed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel1.setText("Sort By :");
@@ -199,6 +211,11 @@ public class WOrders extends javax.swing.JPanel {
         printButton.setForeground(new java.awt.Color(0, 0, 0));
         printButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/print-icon.png"))); // NOI18N
         printButton.setText("Print");
+        printButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -285,8 +302,8 @@ public class WOrders extends javax.swing.JPanel {
         
         try {
             ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
-                    + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `w_product` "
-                    + "ON `order_items`.`w_product_id` = `w_product`.`id`"
+                    + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `product` "
+                    + "ON `order_items`.`product_id` = `product`.`id`"
                     + "WHERE `order`.`id` = '"+String.valueOf(ordersTable.getValueAt(row, 0))+"'");
             
             DefaultTableModel model = (DefaultTableModel) orderItemsTable.getModel();
@@ -294,7 +311,7 @@ public class WOrders extends javax.swing.JPanel {
             
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
-                vector.add(resultSet.getString("w_product.name"));
+                vector.add(resultSet.getString("product.name"));
                 vector.add(resultSet.getString("order_items.qty"));
                 model.addRow(vector);
             }
@@ -310,6 +327,40 @@ public class WOrders extends javax.swing.JPanel {
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         reset();
     }//GEN-LAST:event_resetButtonActionPerformed
+
+    private void viewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewButtonActionPerformed
+        InputStream path = this.getClass().getResourceAsStream("/reports/gh_grn.jasper");
+        HashMap<String, Object> parameters = new HashMap<>();
+//        parameters.put("Parameter1", wSupervisorIDField.getText());
+//        parameters.put("Parameter2", grnIDField.getText());
+//        parameters.put("Parameter3", supplierMobileField.getText());
+//        parameters.put("Parameter4", dateTime);
+//        parameters.put("Parameter5", totalLabel.getText());
+//        parameters.put("Parameter6", paymentFormattedField.getText());
+//        parameters.put("Parameter7", balanceLabel.getText());
+        
+//        JRTableModelDataSource dataSource = new JRTableModelDataSource(grnItemTable.getModel());
+//        JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
+//        JasperViewer.viewReport(report, false);
+        reset();
+    }//GEN-LAST:event_viewButtonActionPerformed
+
+    private void printButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printButtonActionPerformed
+        InputStream path = this.getClass().getResourceAsStream("/reports/gh_grn.jasper");
+        HashMap<String, Object> parameters = new HashMap<>();
+//        parameters.put("Parameter1", wSupervisorIDField.getText());
+//        parameters.put("Parameter2", grnIDField.getText());
+//        parameters.put("Parameter3", supplierMobileField.getText());
+//        parameters.put("Parameter4", dateTime);
+//        parameters.put("Parameter5", totalLabel.getText());
+//        parameters.put("Parameter6", paymentFormattedField.getText());
+//        parameters.put("Parameter7", balanceLabel.getText());
+        
+//        JRTableModelDataSource dataSource = new JRTableModelDataSource(grnItemTable.getModel());
+//        JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
+//        JasperPrintManager.printReport(report, false);
+        reset();
+    }//GEN-LAST:event_printButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
