@@ -15,7 +15,7 @@ import javax.swing.SwingUtilities;
 
 public class outletGui extends javax.swing.JFrame {
 private outletReport outletReport1;
-private outletSales os;
+private outletSales1 os;
 private returnDamage rd;
     
     public outletGui() {
@@ -39,7 +39,7 @@ private returnDamage rd;
     public void addoutletSales(){
         
         if (os == null) {
-            //os = new outletSales(this);
+            //os = new outletSales1(this);
             jPanel1.add(os,BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel1);
             

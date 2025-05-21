@@ -16,14 +16,14 @@ import model.MySQL;
  *
  * @author chath
  */
-public class OutofStocks extends javax.swing.JDialog {
+public class LowOfStocks extends javax.swing.JDialog {
 
     private DashboardOU dashboard;
 
     /**
      * Creates new form OrderHistory
      */
-    public OutofStocks(java.awt.Frame parent, boolean modal, DashboardOU dashboard) {
+    public LowOfStocks(java.awt.Frame parent, boolean modal, DashboardOU dashboard) {
         super(parent, modal);
         this.dashboard = dashboard;
         initComponents();
@@ -39,7 +39,7 @@ public class OutofStocks extends javax.swing.JDialog {
                     + "INNER JOIN `product` ON `stock`.`product_id` = `product`.`id` "
                     + "INNER JOIN `category` ON `category`.`id` = `product`.`category_id` "
                     + "INNER JOIN `stock_status` ON `stock`.`stock_status_id` = `stock_status`.`id` "
-                    + "WHERE `stock_status`.`type` = 'Out of stock'";
+                    + "WHERE `stock_status`.`type` = 'Low of stock'";
 
             int row = jTable1.getSelectedRow();
 
@@ -91,7 +91,7 @@ public class OutofStocks extends javax.swing.JDialog {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel1.setText("Out of Stocks");
+        jLabel1.setText("Low of Stocks");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

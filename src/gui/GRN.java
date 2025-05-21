@@ -4,6 +4,16 @@
  */
 package gui;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +26,7 @@ import model.GRNItem;
 import model.MySQL;
 import java.sql.ResultSet;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 
 /**
@@ -154,6 +165,7 @@ public class GRN extends javax.swing.JPanel {
         jButton5 = new javax.swing.JButton();
         jLabel26 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
@@ -329,6 +341,10 @@ public class GRN extends javax.swing.JPanel {
         jLabel27.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel27.setText("WEIGHT HERE");
 
+        jButton1.setBackground(new java.awt.Color(255, 248, 244));
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons8-print-28.png"))); // NOI18N
+        jButton1.setBorder(null);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -405,11 +421,14 @@ public class GRN extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jButton1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(75, 75, 75))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -484,7 +503,9 @@ public class GRN extends javax.swing.JPanel {
                     .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel22))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
                 .addContainerGap(114, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -613,9 +634,8 @@ public class GRN extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Please enter EXP", "Warning", JOptionPane.WARNING_MESSAGE);
         } else {
             try {
-
                 String grnNumber = jTextField2.getText();
-                String distributorId = distributorMap.get(distributor); 
+                String distributorId = distributorMap.get(distributor);
                 if (distributorId == null) {
                     JOptionPane.showMessageDialog(this, "Invalid distributor selected", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -623,13 +643,11 @@ public class GRN extends javax.swing.JPanel {
 
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 String amount = jLabel24.getText();
-
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
                 MySQL.executeIUD("INSERT INTO `grn` VALUES('" + grnNumber + "','" + date + "','" + amount + "','" + distributorId + "')");
 
                 for (GRNItem grnItem : grnItemMap.values()) {
-
                     ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `stock` WHERE "
                             + "`product_id`= '" + grnItem.getProductId() + "' AND "
                             + "`price`='" + grnItem.getSellingPrice() + "' AND"
@@ -639,41 +657,77 @@ public class GRN extends javax.swing.JPanel {
                     String sid = "";
 
                     if (resultSet.next()) {
-                      
-
                         sid = resultSet.getString("id");
-
                         String currentQty = resultSet.getString("qty");
+                        String stockBarcode = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
                         String updatedQuantity = String.valueOf(Double.parseDouble(currentQty) + grnItem.getQty());
                         MySQL.executeIUD("UPDATE `stock` SET `qty` = '" + updatedQuantity + "' WHERE `id` = '" + sid + "'");
-
                     } else {
-
-                       
-                        MySQL.executeIUD("INSERT INTO `stock`(`product_id`,`qty`,`price`,`mfd`,`exp`,stock_status_id) "
+                        MySQL.executeIUD("INSERT INTO `stock`(`product_id`,`qty`,`price`,`mfd`,`exp`,`stock_status_id`,`barcode`) "
                                 + "VALUES('" + grnItem.getProductId() + "','" + grnItem.getQty() + "','" + grnItem.getSellingPrice() + "', "
-                                + "'" + sdf.format(grnItem.getMfd()) + "','" + sdf.format(grnItem.getExp()) + "','1')");
+                                + "'" + sdf.format(grnItem.getMfd()) + "','" + sdf.format(grnItem.getExp()) + "','1','Pending')");
 
                         ResultSet resultSet2 = MySQL.executeSearch("SELECT * FROM `stock` WHERE "
                                 + "`product_id`= '" + grnItem.getProductId() + "' AND "
                                 + "`price`='" + grnItem.getSellingPrice() + "' AND"
                                 + "`mfd` = '" + sdf.format(grnItem.getMfd()) + "' AND "
                                 + "`exp` = '" + sdf.format(grnItem.getExp()) + "' AND "
-                                + "`stock_status_id` = '1'");
+                                + "`stock_status_id` = '1' AND "
+                                + "`barcode` = 'Pending'");
 
                         if (resultSet2.next()) {
                             sid = resultSet2.getString("id");
                         }
-
                     }
 
                     MySQL.executeIUD("INSERT INTO `grn_items`(`stock_id`,`qty`,`price`,`grn_id`) "
                             + "VALUES('" + sid + "','" + grnItem.getQty() + "','" + grnItem.getBuyingPrice() + "','" + grnNumber + "')");
                 }
 
+                JFileChooser dialog = new JFileChooser();
+                dialog.setSelectedFile(new File("GRN.pdf"));
+                int dialogResult = dialog.showSaveDialog(null);
+
+                if (dialogResult == JFileChooser.APPROVE_OPTION) {
+                    String filePath = dialog.getSelectedFile().getPath();
+                    Document doc = new Document();
+
+                    try {
+                        PdfWriter.getInstance(doc, new FileOutputStream(filePath));
+                        doc.open();
+
+                        PdfPTable tb1 = new PdfPTable(10);
+                        float[] columnWidths = {3f, 3f, 3f, 3f, 3f, 3f, 3f, 3f, 3f, 3f};
+                        tb1.setWidths(columnWidths);
+
+                        Font headerFont = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL);
+                        Font cellFont = new Font(Font.FontFamily.HELVETICA, 7, Font.NORMAL);
+
+                        String[] headers = {"Product ID", "Category", "Name", "Weight", "Quantity", "Buying Price", "Selling Price", "MFD", "EXP", "Total"};
+                        for (String h : headers) {
+                            tb1.addCell(new PdfPCell(new Phrase(h, headerFont)));
+                        }
+
+                        for (int i = 0; i < jTable1.getRowCount(); i++) {
+                            for (int j = 0; j < 10; j++) {
+                                PdfPCell cell = new PdfPCell(new Phrase(jTable1.getValueAt(i, j).toString(), cellFont));
+                                cell.setFixedHeight(20f);
+                                tb1.addCell(cell);
+                            }
+                        }
+
+                        doc.add(tb1);
+                        doc.close();
+                        JOptionPane.showMessageDialog(null, "PDF Generated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error generating PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
                 JOptionPane.showMessageDialog(this, "New GRN Saved", "Success", JOptionPane.INFORMATION_MESSAGE);
-                DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                model.setRowCount(0);
+                ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
                 resetGRN();
                 generateGRNId();
                 jLabel24.setText("0");
@@ -684,6 +738,8 @@ public class GRN extends javax.swing.JPanel {
                 e.printStackTrace();
             }
         }
+
+
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
@@ -714,6 +770,7 @@ public class GRN extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

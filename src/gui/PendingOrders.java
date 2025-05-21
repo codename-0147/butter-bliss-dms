@@ -35,12 +35,12 @@ public class PendingOrders extends javax.swing.JDialog {
         try {
 
             String query = "SELECT `order`.`id` AS order_id, `order`.`date` AS order_date, "
-                    + "`w_product`.`id` AS product_id, `w_product`.`name` AS product_name, "
+                    + "`product`.`id` AS product_id, `product`.`name` AS product_name, "
                     + "`order_items`.`qty` AS order_qty, `order_type`.`type` AS order_type, "
                     + "`order_status`.`name` AS status_name "
                     + "FROM `order` "
                     + "INNER JOIN `order_items` ON `order`.`id` = `order_items`.`order_id` "
-                    + "INNER JOIN `w_product` ON `order_items`.`w_product_id` = `w_product`.`id` "
+                    + "INNER JOIN `product` ON `order_items`.`product_id` = `product`.`id` "
                     + "INNER JOIN `order_type` ON `order`.`order_type_id` = `order_type`.`id`"
                     + "INNER JOIN `order_status` ON `order`.`order_status_id` = `order_status`.`id` "
                     + "WHERE `order_status`.`name` = 'pending'";

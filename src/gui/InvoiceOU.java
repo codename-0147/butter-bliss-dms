@@ -18,6 +18,14 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import model.InvoiceItemOU;
 import model.MySQL;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import static org.slf4j.helpers.Util.report;
+
 
 /**
  *
@@ -35,9 +43,10 @@ public class InvoiceOU extends javax.swing.JPanel {
 
         try {
 
-            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `payment_method`");
+            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `outlet_payment_method`");
 
             Vector<String> vector = new Vector<>();
+            vector.add("Select Payment Method");
 
             while (resultSet.next()) {
                 vector.add(resultSet.getString("type"));
@@ -88,6 +97,11 @@ public class InvoiceOU extends javax.swing.JPanel {
     public void setStockId(String stockId) {
         jTextField3.setText(stockId);
     }
+    
+    //barcode
+    public void setBarcode(String barcode) {
+        stockBarcodeField.setText(barcode);
+    }
 
     // Category Name
     public void setCategory(String category) {
@@ -134,7 +148,7 @@ public class InvoiceOU extends javax.swing.JPanel {
 
     private void generateInvoiceID() {
         long id = System.currentTimeMillis();
-        jTextField4.setText(String.valueOf(id));
+        invoiceNumberField.setText(String.valueOf(id));
     }
 
     private void loadCustomer() {
@@ -222,7 +236,7 @@ public class InvoiceOU extends javax.swing.JPanel {
 
         jLabel6 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        invoiceNumberField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jButton16 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
@@ -255,10 +269,14 @@ public class InvoiceOU extends javax.swing.JPanel {
         paymentField = new javax.swing.JFormattedTextField();
         discountField = new javax.swing.JFormattedTextField();
         printInvoiceButton = new javax.swing.JButton();
+        jLabel30 = new javax.swing.JLabel();
+        jCheckBox1 = new javax.swing.JCheckBox();
         jLabel13 = new javax.swing.JLabel();
         jTextField5 = new javax.swing.JTextField();
         jComboBox2 = new javax.swing.JComboBox<>();
         jButton18 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        stockBarcodeField = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
@@ -271,10 +289,10 @@ public class InvoiceOU extends javax.swing.JPanel {
         jLabel8.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel8.setText("Invoice ID");
 
-        jTextField4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(245, 219, 200)));
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        invoiceNumberField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(245, 219, 200)));
+        invoiceNumberField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                invoiceNumberFieldActionPerformed(evt);
             }
         });
 
@@ -388,7 +406,6 @@ public class InvoiceOU extends javax.swing.JPanel {
         jLabel27.setText("Payment Method");
 
         jComboBox1.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jComboBox1.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jComboBox1ItemStateChanged(evt);
@@ -422,6 +439,11 @@ public class InvoiceOU extends javax.swing.JPanel {
         paymentField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         paymentField.setText("0");
         paymentField.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
+        paymentField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paymentFieldActionPerformed(evt);
+            }
+        });
         paymentField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 paymentFieldKeyReleased(evt);
@@ -452,26 +474,37 @@ public class InvoiceOU extends javax.swing.JPanel {
             }
         });
 
+        jLabel30.setFont(new java.awt.Font("Poppins", 1, 12)); // NOI18N
+        jLabel30.setText("Withdaw Points");
+
+        jCheckBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jCheckBox1ItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel24)
+                    .addComponent(jLabel26)
+                    .addComponent(jLabel28)
                     .addComponent(jLabel29)
                     .addComponent(jLabel27)
-                    .addComponent(jLabel26)
-                    .addComponent(jLabel24)
-                    .addComponent(jLabel28))
+                    .addComponent(jLabel30))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(totalField)
                     .addComponent(balanceFiled, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(paymentField)
                     .addComponent(discountField, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(printInvoiceButton, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
+                    .addComponent(printInvoiceButton, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -490,15 +523,19 @@ public class InvoiceOU extends javax.swing.JPanel {
                     .addComponent(jLabel27)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel30)
+                    .addComponent(jCheckBox1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(paymentField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paymentField, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel28))
-                .addGap(15, 15, 15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(balanceFiled, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(balanceFiled, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel29))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(printInvoiceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(printInvoiceButton, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
         );
 
         jLabel13.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
@@ -522,6 +559,16 @@ public class InvoiceOU extends javax.swing.JPanel {
             }
         });
 
+        jLabel9.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        jLabel9.setText("Barcode");
+
+        stockBarcodeField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(245, 219, 200)));
+        stockBarcodeField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stockBarcodeFieldActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -535,29 +582,37 @@ public class InvoiceOU extends javax.swing.JPanel {
                         .addGap(70, 70, 70)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel8)
-                                            .addComponent(jLabel11))
+                                            .addComponent(jLabel5)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jLabel8)
+                                                    .addComponent(jLabel11))
+                                                .addGap(18, 18, 18)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(invoiceNumberField, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addGroup(layout.createSequentialGroup()
+                                                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                                         .addGap(18, 18, 18)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel13)
-                                    .addComponent(jLabel7))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jTextField3)
-                                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
-                                    .addComponent(jTextField5))
+                                                .addComponent(jLabel13)
+                                                .addGap(26, 26, 26)
+                                                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jLabel7)
+                                                    .addComponent(jLabel9))
+                                                .addGap(18, 18, 18)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(stockBarcodeField)))))
+                                    .addComponent(jButton1))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
@@ -594,25 +649,25 @@ public class InvoiceOU extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addGap(19, 19, 19))
+                .addGap(24, 24, 24))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(14, 14, 14)
                 .addComponent(jLabel1)
-                .addGap(20, 20, 20)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7)
+                    .addComponent(invoiceNumberField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel18)
                     .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel25)
                     .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField3))
+                    .addComponent(jLabel9)
+                    .addComponent(stockBarcodeField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
@@ -621,7 +676,9 @@ public class InvoiceOU extends javax.swing.JPanel {
                     .addComponent(jLabel16)
                     .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel20)
-                    .addComponent(jLabel22))
+                    .addComponent(jLabel22)
+                    .addComponent(jLabel7)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
@@ -633,10 +690,10 @@ public class InvoiceOU extends javax.swing.JPanel {
                     .addComponent(jButton18, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21))
+                .addContainerGap(115, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -655,7 +712,7 @@ public class InvoiceOU extends javax.swing.JPanel {
 
         Product p = new Product(home, true, grn, this, order);
         p.setVisible(true);
-
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
@@ -680,6 +737,11 @@ public class InvoiceOU extends javax.swing.JPanel {
 
     private void printInvoiceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printInvoiceButtonActionPerformed
 
+        if (invoiceItemMap.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please add at least one product to the cart", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String customer = String.valueOf(jComboBox2.getSelectedItem());
         String stockID = jTextField3.getText();
         String qty = jFormattedTextField1.getText();
@@ -687,17 +749,11 @@ public class InvoiceOU extends javax.swing.JPanel {
 
         if (customer.equals("Select Customer")) {
             JOptionPane.showMessageDialog(this, "Please select a customer", "Warning", JOptionPane.WARNING_MESSAGE);
-        } else if (stockID.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter stock id", "Warning", JOptionPane.WARNING_MESSAGE);
-        } else if (qty.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter quantity", "Warning", JOptionPane.WARNING_MESSAGE);
-        } else if (sellingPrice.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter selling price", "Warning", JOptionPane.WARNING_MESSAGE);
         } else {
 
             try {
 
-                String invoiceID = jTextField4.getText();
+                String invoiceID = invoiceNumberField.getText();
                 String customerId = customerMap.get(customer);
                 if (customerId == null) {
                     JOptionPane.showMessageDialog(this, "Invalid customer selected", "Error", JOptionPane.ERROR_MESSAGE);
@@ -731,6 +787,62 @@ public class InvoiceOU extends javax.swing.JPanel {
 
                 }
 
+//                double points = Double.parseDouble(totalField.getText()) / 100;
+                //Withdraw Points
+//            if (withdawPoints) {
+//                newPoints += points;
+//                MySQL2.executeIUD("UPDATE `customer` SET `point` ='" + newPoints + "' WHERE `mobile` = '" + customerMobile + "'");
+//            } else {
+//                
+//                MySQL2.executeIUD("UPDATE `customer` SET `point`=`point`+'" + points + "' WHERE `mobile` = '" + customerMobile + "'");
+//            }
+                //Withdraw Points
+                //view or print report
+//                String path = "src//reports//test_invoice.jasper";
+//
+//                HashMap<String, Object> params = new HashMap<>();
+//                params.put("Parameter5", totalField.getText());
+//                params.put("Parameter6", discountField.getText());
+//                params.put("Parameter7", String.valueOf(jComboBox1.getSelectedItem()));
+//                params.put("Parameter8", paymentField.getText());
+//                params.put("Parameter9", balanceFiled.getText());
+//
+//                params.put("Parameter2", invoiceNumberField.getText());
+//                params.put("Parameter7", String.valueOf(jComboBox2.getSelectedItem()));
+//                //params.put("Parameter1", employeeLable.getText());
+//                params.put("Parameter4", dateTime);
+//
+//                JRTableModelDataSource dataSource = new JRTableModelDataSource(jTable1.getModel());
+//
+//                JasperPrint jasperPrint = JasperFillManager.fillReport(path, params, dataSource);
+//
+//                JasperViewer.viewReport(jasperPrint, false);
+//                JasperPrintManager.printReport(jasperPrint, false);
+//                JasperExportManager.exportReportToPdfFile(jasperPrint, path);
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+
+
+
+                InputStream path = this.getClass().getResourceAsStream("/reports/test_invoice.jasper");
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("Parameter5", totalField.getText());
+                params.put("Parameter6", discountField.getText());
+                params.put("Parameter7", String.valueOf(jComboBox1.getSelectedItem()));
+                params.put("Parameter8", paymentField.getText());
+                params.put("Parameter9", balanceFiled.getText());
+
+                params.put("Parameter2", invoiceNumberField.getText());
+                params.put("Parameter3", String.valueOf(jComboBox2.getSelectedItem()));
+                //params.put("Parameter1", employeeLable.getText());
+                params.put("Parameter4", dateTime);
+
+                JRTableModelDataSource dataSource = new JRTableModelDataSource(jTable1.getModel());
+                JasperPrint report = JasperFillManager.fillReport(path, params, dataSource);
+                JasperViewer.viewReport(report, false);
+                JasperPrintManager.printReport(report, false);
+                //JasperExportManager.exportReportToPdfFile(report, outputPath);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -790,6 +902,7 @@ public class InvoiceOU extends javax.swing.JPanel {
                     }
                 }
                 loadInvoiceItems();
+                resetInvoice();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -797,9 +910,9 @@ public class InvoiceOU extends javax.swing.JPanel {
 
     }//GEN-LAST:event_jButton16ActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void invoiceNumberFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_invoiceNumberFieldActionPerformed
         jComboBox2.grabFocus();
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_invoiceNumberFieldActionPerformed
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
         resetInvoice();
@@ -817,14 +930,54 @@ public class InvoiceOU extends javax.swing.JPanel {
         model.setRowCount(0);
     }//GEN-LAST:event_jButton17ActionPerformed
 
+    private void jCheckBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox1ItemStateChanged
+        // 5
+        calculate();
+    }//GEN-LAST:event_jCheckBox1ItemStateChanged
+
+    private void paymentFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_paymentFieldActionPerformed
+
+    private void stockBarcodeFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockBarcodeFieldActionPerformed
+        String barcode = stockBarcodeField.getText();
+        
+        try {
+            if (barcode.length() == 12) {
+                ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `stock` "
+                        + "INNER JOIN `product` ON `stock`.`product_id` = `product`.`id` "
+                        + "INNER JOIN `category` ON `product`.`category_id` = `category`.`id` "
+                        + "WHERE `stock`.`barcode` = '"+barcode+"'");
+                
+                if (resultSet.next()) {
+                    jTextField3.setText(resultSet.getString("stock.id"));
+                    jLabel21.setText(resultSet.getString("stock.qty"));
+                    jLabel23.setText(resultSet.getString("category.name"));
+                    jLabel19.setText(resultSet.getString("product.name"));
+                    jLabel17.setText(resultSet.getString("stock.mfd"));
+                    jLabel22.setText(resultSet.getString("stock.exp"));
+                    jTextField5.setText(resultSet.getString("stock.price"));
+                }else {
+                    JOptionPane.showMessageDialog(this, "No product found", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }else {
+                JOptionPane.showMessageDialog(this, "Invalid barcode", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }         
+    }//GEN-LAST:event_stockBarcodeFieldActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFormattedTextField balanceFiled;
     private javax.swing.JFormattedTextField discountField;
+    private javax.swing.JTextField invoiceNumberField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JFormattedTextField jFormattedTextField1;
@@ -845,18 +998,20 @@ public class InvoiceOU extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
+    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JFormattedTextField paymentField;
     private javax.swing.JButton printInvoiceButton;
+    private javax.swing.JTextField stockBarcodeField;
     private javax.swing.JFormattedTextField totalField;
     // End of variables declaration//GEN-END:variables
 

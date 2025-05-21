@@ -4,9 +4,10 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.SwingUtilities;
-
+import org.apache.log4j.BasicConfigurator;
 
 public class HomeOU extends javax.swing.JFrame {
+
     private static HomeOU obj = null;
     public static DashboardOU db;
     public static OrderOU od;
@@ -16,22 +17,23 @@ public class HomeOU extends javax.swing.JFrame {
     public static FeedbackOU fb;
     public static Product p;
     private outletReport or;
-    private outletSales os;
+    private outletSales1 os;
     private returnDamage rd;
+    private PanelNavigator navigator;
 
-    
     public HomeOU() {
         initComponents();
         jToggleButton2.setVisible(false);
+        navigator = new PanelNavigator(jPanel2);
     }
-    
+
     public static HomeOU getObj() {
         if (obj == null) {
             obj = new HomeOU();
         }
         return obj;
     }
-    
+
     private void moveLeft() {
         jToggleButton1.setVisible(false);
         Thread t = new Thread(
@@ -107,6 +109,7 @@ public class HomeOU extends javax.swing.JFrame {
             db = new DashboardOU(this);
             jPanel2.add(db, BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel2);
+
         } else {
             jPanel2.removeAll();
             jPanel2.add(db, BorderLayout.CENTER);
@@ -127,6 +130,10 @@ public class HomeOU extends javax.swing.JFrame {
             od = new OrderOU(this);
             jPanel2.add(od, BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel2);
+            navigator.addPanel(od);
+              updateNavButtons();
+
+
         } else {
             jPanel2.removeAll();
             jPanel2.add(od, BorderLayout.CENTER);
@@ -223,68 +230,74 @@ public class HomeOU extends javax.swing.JFrame {
         fb = null;
         SwingUtilities.updateComponentTreeUI(jPanel2);
     }
-    
-    public void addoutletSales(){
-        
+
+    public void addoutletSales() {
+
         if (os == null) {
-            os = new outletSales(this);
-            jPanel2.add(os,BorderLayout.CENTER);
+            os = new outletSales1(this);
+            jPanel2.add(os, BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel2);
-            
+
         } else {
             jPanel2.removeAll();
-            jPanel2.add(os,BorderLayout.CENTER);
+            jPanel2.add(os, BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel2);
         }
-    
+
     }
-    
+
     public void removeoutletSales() {
         jPanel2.remove(os);
         os = null;
         SwingUtilities.updateComponentTreeUI(jPanel2);
     }
 
-    public void addreturnDamage(){
-    
+    public void addreturnDamage() {
+
         if (rd == null) {
-          rd = new returnDamage(this);
-          jPanel2.add(rd,BorderLayout.CENTER);
-          SwingUtilities.updateComponentTreeUI(jPanel2);  
+            rd = new returnDamage(this);
+            jPanel2.add(rd, BorderLayout.CENTER);
+            SwingUtilities.updateComponentTreeUI(jPanel2);
         } else {
             jPanel2.removeAll();
-            jPanel2.add(rd,BorderLayout.CENTER);
+            jPanel2.add(rd, BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel2);
         }
-    
+
     }
-    
+
     public void removereturnDamage() {
         jPanel2.remove(rd);
         rd = null;
         SwingUtilities.updateComponentTreeUI(jPanel2);
     }
-    
-    public void addoutletReport(){
+
+    public void addoutletReport() {
         if (or == null) {
             or = new outletReport(this);
-            jPanel2.add(or,BorderLayout.CENTER);
+            jPanel2.add(or, BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel2);
-            
+
         } else {
             jPanel2.removeAll();
-            jPanel2.add(or,BorderLayout.CENTER);
+            jPanel2.add(or, BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel2);
         }
-    
+
     }
-    
+
     public void removeoutletReport() {
         jPanel2.remove(or);
         or = null;
         SwingUtilities.updateComponentTreeUI(jPanel2);
     }
     
+    private void updateNavButtons() {
+    back.setEnabled(navigator.canGoBack());
+    forward.setEnabled(navigator.canGoForward());
+}
+
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -319,6 +332,8 @@ public class HomeOU extends javax.swing.JFrame {
         jButton20 = new javax.swing.JButton();
         jButton18 = new javax.swing.JButton();
         jButton17 = new javax.swing.JButton();
+        back = new javax.swing.JLabel();
+        forward = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -630,14 +645,35 @@ public class HomeOU extends javax.swing.JFrame {
             }
         });
 
+        back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/back.png"))); // NOI18N
+        back.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                backMouseClicked(evt);
+            }
+        });
+
+        forward.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/forward.png"))); // NOI18N
+        forward.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                forwardMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(59, 59, 59)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(99, 99, 99)
+                        .addComponent(jLabel3))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(back)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(forward)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -651,23 +687,24 @@ public class HomeOU extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(jButton18, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel3Layout.createSequentialGroup()
                             .addGap(23, 23, 23)
                             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel4)
-                                .addComponent(jButton20)))))
+                                .addComponent(jButton20)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(back)
+                                    .addComponent(forward))
+                                .addComponent(jButton18, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(8, Short.MAX_VALUE))
         );
 
@@ -763,12 +800,23 @@ public class HomeOU extends javax.swing.JFrame {
         addoutletReport();
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    private void backMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backMouseClicked
+ navigator.goBack();
+    }//GEN-LAST:event_backMouseClicked
+
+    private void forwardMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_forwardMouseClicked
+          navigator.goForward();
+    }//GEN-LAST:event_forwardMouseClicked
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         FlatMacLightLaf.setup();
+        
+        //log error fix
+        BasicConfigurator.configure();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -779,6 +827,8 @@ public class HomeOU extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel back;
+    private javax.swing.JLabel forward;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton12;

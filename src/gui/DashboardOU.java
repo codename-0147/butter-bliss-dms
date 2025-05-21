@@ -4,9 +4,16 @@
  */
 package gui;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import model.MySQL;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.general.DefaultPieDataset;
 
 /**
  *
@@ -209,6 +216,73 @@ public class DashboardOU extends javax.swing.JPanel {
         }
     }
 
+//    public void showPieChart() {
+//        try {
+//            // Create dataset
+//            DefaultPieDataset pieDataset = new DefaultPieDataset();
+//
+//           
+//           String query = "SELECT outlet_sales.id AS invoice_id, "
+//                    + "outlet_sales.date AS invoice_date, "
+//                    + "outlet_sales.amount AS total_amount, "
+//                   + "product.name AS product_name, "
+//                    + "outlet_sales.qty AS product_qty "
+//                    + "FROM outlet_sales "
+//                   + "INNER JOIN product ON outlet_sales.product_id = product.id "
+//                   + "WHERE outlet_sales.outlet_id = '" + outletID + "' "
+//                   + "AND outlet_sales.date >= DATE_SUB(CURDATE(), INTERVAL " + intervalDays + " DAY)";
+//
+//            // Execute the query
+//            ResultSet rs = MySQL.executeSearch(query);
+//
+//            // Populate the dataset with data from the database
+//            while (rs.next()) {
+//               String outletName = rs.getString("outlet_name");
+//                double totalSales = rs.getDouble("total_sales");
+//
+//                // Add the outlet name and its total sales to the pie chart dataset
+//               pieDataset.setValue(outletName, totalSales);
+//            }
+//
+//            // Create the pie chart
+//            JFreeChart pieChart = ChartFactory.createPieChart(
+//                    "Outlet Sales Distribution", // Chart title
+//                    pieDataset, // Dataset
+//                    true, // Include legend
+//                    true, // Tooltips
+//                    false // URLs
+//            );
+//
+//            // Customize the pie chart
+//            PiePlot piePlot = (PiePlot) pieChart.getPlot();
+//
+//            // Set background color
+//            piePlot.setBackgroundPaint(Color.WHITE);
+//
+//            // Optional: Set section colors if you know the outlet names in advance
+//            // (Otherwise, JFreeChart assigns random colors)
+//            piePlot.setSectionPaint("Outlet A", new Color(221, 160, 221)); // Light Purple
+//            piePlot.setSectionPaint("Outlet B", new Color(255, 255, 153)); // Light Yellow
+//            piePlot.setSectionPaint("Outlet C", new Color(144, 238, 144)); // Light Green
+//
+//            // Create a ChartPanel to display the chart
+//            ChartPanel chartPanel = new ChartPanel(pieChart);
+//            chartPanel.setPreferredSize(new Dimension(700, 400));
+//            chartPanel.setMouseWheelEnabled(true);
+//
+//            // Add to jPanel5
+////        jPanel5.removeAll();
+////        jPanel5.setLayout(new BorderLayout());
+////        jPanel5.add(chartPanel, BorderLayout.CENTER);
+////        jPanel5.validate();
+//            // Close the result set
+//           // rs.close();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -382,7 +456,7 @@ public class DashboardOU extends javax.swing.JPanel {
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
 
-        OutofStocks outofstock = new OutofStocks(home, true, this);
+        LowOfStocks outofstock = new LowOfStocks(home, true, this);
         outofstock.setVisible(true);
     }//GEN-LAST:event_jButton13ActionPerformed
 

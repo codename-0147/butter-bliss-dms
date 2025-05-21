@@ -103,6 +103,7 @@ public class Product extends javax.swing.JDialog {
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
                 vector.add(resultSet.getString("stock.id"));
+                vector.add(resultSet.getString("barcode"));
                 vector.add(resultSet.getString("product.id"));
                 vector.add(resultSet.getString("category.name"));
                 vector.add(resultSet.getString("product.name"));
@@ -170,17 +171,17 @@ public class Product extends javax.swing.JDialog {
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Stock ID", "Product Id", "Category", "Name", "Weight", "Price", "Quantity", "MFD", "EXP"
+                "Stock ID", "Barcode", "Product Id", "Category", "Name", "Weight", "Price", "Quantity", "MFD", "EXP"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, true, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -273,13 +274,14 @@ public class Product extends javax.swing.JDialog {
         if (evt.getClickCount() == 2) {
             if (invoice != null) {
                 invoice.setStockId(String.valueOf(jTable2.getValueAt(row, 0)));
-                invoice.setCategory(String.valueOf(jTable2.getValueAt(row, 2)));
-                invoice.setName(String.valueOf(jTable2.getValueAt(row, 3)));
-                invoice.setSellingPrice(String.valueOf(jTable2.getValueAt(row, 4)));
-                invoice.setMfd(String.valueOf(jTable2.getValueAt(row, 6)));
-                invoice.setExp(String.valueOf(jTable2.getValueAt(row, 7)));
+                invoice.setBarcode(String.valueOf(jTable2.getValueAt(row, 1)));
+                invoice.setCategory(String.valueOf(jTable2.getValueAt(row, 3)));
+                invoice.setName(String.valueOf(jTable2.getValueAt(row, 4)));
+                invoice.setSellingPrice(String.valueOf(jTable2.getValueAt(row, 6)));
+                invoice.setMfd(String.valueOf(jTable2.getValueAt(row, 8)));
+                invoice.setExp(String.valueOf(jTable2.getValueAt(row, 9)));
                 invoice.getjFormattedTextField1().grabFocus();
-                invoice.getjLabel21().setText(String.valueOf(jTable2.getValueAt(row, 5)));
+                invoice.getjLabel21().setText(String.valueOf(jTable2.getValueAt(row, 7)));
                 this.dispose();
             }
         }
