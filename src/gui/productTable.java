@@ -4,42 +4,41 @@
  */
 package gui;
 
-
-import com.itextpdf.xmp.XMPMetaFactory;
-import com.mysql.cj.protocol.Resultset;
-import javax.swing.table.DefaultTableModel;
-import model.MySQL;
 import java.sql.ResultSet;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import model.MySQL;
 
 /**
  *
  * @author Oshadha
  */
-public class wproductTable extends javax.swing.JDialog {
+public class productTable extends javax.swing.JDialog {
     
-    private static HashMap<String, String> categoryMap = new HashMap<>();
+     private static HashMap<String, String> categoryMap = new HashMap<>();
 
     /**
      * Creates new form productTable
      */
-    public wproductTable(java.awt.Frame parent, boolean modal) {
+    public productTable(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        loadWProducts();
         loadCategory();
+        loadProducts();
+        
     }
-    
-   private void loadWProducts(){
+     private void loadProducts(){
         
         
         try {
             
-            ResultSet resultset = MySQL.executeSearch("SELECT * FROM `w_product`"
-                    + "INNER JOIN `category` ON `w_product`.`category_id` = `category`.`id`");
+            ResultSet resultset = MySQL.executeSearch("SELECT * FROM `product`"
+                    + "INNER JOIN `category` ON `product`.`category_id` = `category`.`id`");
             
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0);
@@ -49,7 +48,6 @@ public class wproductTable extends javax.swing.JDialog {
                 Vector<String> vector = new Vector<>();
                 vector.add(resultset.getString("id"));
                 vector.add(resultset.getString("name"));
-                vector.add(resultset.getString("price"));
                 vector.add(resultset.getString("weight"));
                 vector.add(resultset.getString("category.name"));
                 model.addRow(vector);
@@ -85,8 +83,7 @@ public class wproductTable extends javax.swing.JDialog {
            e.printStackTrace();
        }
    }
-    
-   
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -106,14 +103,12 @@ public class wproductTable extends javax.swing.JDialog {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jTextField3 = new javax.swing.JTextField();
+        jButton4 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Product Table");
-        setBackground(new java.awt.Color(245, 219, 200));
 
         jPanel1.setBackground(new java.awt.Color(245, 219, 200));
         jPanel1.setForeground(new java.awt.Color(245, 219, 200));
@@ -128,11 +123,11 @@ public class wproductTable extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Id", "Name", "Price", "Weight", "Category"
+                "Id", "Name", "Weight", "Category"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -146,120 +141,131 @@ public class wproductTable extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 600, 400));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 590, 330));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
         jLabel1.setText("Product Name");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 20, 190, -1));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 50, 190, 30));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 110, 86, -1));
+        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 140, 240, 30));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
         jLabel2.setText("Category");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 240, 63, -1));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 260, 63, -1));
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 270, 190, 30));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 290, 250, 30));
 
         jButton1.setBackground(new java.awt.Color(255, 246, 209));
-        jButton1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
-        jButton1.setText("Add");
+        jButton1.setText("Register");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 200, 130, 30));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 140, 160, 30));
 
         jButton2.setBackground(new java.awt.Color(255, 246, 209));
-        jButton2.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
         jButton2.setText("Update");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 50, 130, 30));
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 200, 160, 30));
 
         jButton3.setBackground(new java.awt.Color(255, 246, 209));
-        jButton3.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
         jButton3.setText("Delete");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 120, 130, 30));
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 250, 160, 30));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
-        jLabel3.setText("Price");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 90, 190, 20));
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 120, 190, 30));
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
         jLabel4.setText("Weight");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, 190, -1));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 200, 190, 30));
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 190, 50, -1));
+
+        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField3ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 210, 240, 30));
+
+        jButton4.setBackground(new java.awt.Color(255, 246, 209));
+        jButton4.setText("Print");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 300, 160, 30));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(117, 85, 23));
+        jLabel3.setText("Product Table");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 340, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1110, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        try {
-            String pname = jTextField1.getText();
-            
-            MySQL.executeIUD("DELETE FROM `w_product` "
-                    + "WHERE `name` = '"+pname+"'");
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        if (evt.getClickCount() == 2) {
+
+            int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow != -1) {
+
+                jTextField1.setText(String.valueOf(jTable1.getValueAt(selectedRow, 1)));
+                jTextField3.setText(String.valueOf(jTable1.getValueAt(selectedRow, 2)));
+                jComboBox1.setSelectedItem(String.valueOf(jTable1.getValueAt(selectedRow, 3)));
+
+            }
+
         }
-        loadWProducts();
-        reset();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_jTable1MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            
+
             String pname = jTextField1.getText();
-            String price = jTextField2.getText();
             String weight = jTextField3.getText();
             String category = String.valueOf(jComboBox1.getSelectedItem());
-            
+
             if (pname.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please Enter Product Name","Warning",JOptionPane.WARNING_MESSAGE);
-            }else if (price.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter the Price","Warning", JOptionPane.WARNING_MESSAGE);
             }else if (weight.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please Enter Weight","Warning",JOptionPane.WARNING_MESSAGE);
 
             }else if (category.equals("Select")) {
                 JOptionPane.showMessageDialog(this, "Please Select Category","Warning",JOptionPane.WARNING_MESSAGE);
-               
+
             }else {
                 ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `w_product` WHERE `name`='"+pname+"'");
-                
+
                 if (resultSet.next()) {
                     JOptionPane.showMessageDialog(this, "This product already Registeres","Warning", JOptionPane.WARNING_MESSAGE);
-                    
+
                 } else {
-                    MySQL.executeIUD("INSERT INTO `w_product`(`name`,`price`,`weight`,`category_id`)"
-                            + "VALUES ('"+pname+"','"+price+"','"+weight+"',"
-                                    + "'"+categoryMap.get(category)+"')");
+                    MySQL.executeIUD("INSERT INTO `product`(`name`,`weight`,`category_id`)"
+                        + "VALUES ('"+pname+"','"+weight+"',"
+                        + "'"+categoryMap.get(category)+"')");
                     JOptionPane.showMessageDialog(this, "New Product added","Warning",JOptionPane.INFORMATION_MESSAGE);
-                    loadWProducts();
+                    loadProducts();
                     reset();
                 }
             }
@@ -270,73 +276,85 @@ public class wproductTable extends javax.swing.JDialog {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            
+
             String pname = jTextField1.getText();
-            String price = jTextField2.getText();
             String weight = jTextField3.getText();
             String category = String.valueOf(jComboBox1.getSelectedItem());
-            
+
             if (pname.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please Enter Product Name","Warning",JOptionPane.WARNING_MESSAGE);
-            }else if (price.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter the Price","Warning", JOptionPane.WARNING_MESSAGE);
             }else if (weight.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please Enter Weight","Warning",JOptionPane.WARNING_MESSAGE);
 
             }else if (category.equals("Select")) {
                 JOptionPane.showMessageDialog(this, "Please Select Category","Warning",JOptionPane.WARNING_MESSAGE);
-               
+
             }else {
-                ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `w_product` WHERE `name`='"+pname+"'");
-                
+                ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `product` WHERE `name`='"+pname+"'");
+
                 boolean canUpdate = false;
-                
+
                 if (resultSet.next()) {
                     if (!resultSet.getString("name").equals(pname)) {
                         JOptionPane.showMessageDialog(this, "This product already used","Warning",JOptionPane.WARNING_MESSAGE);
-                        
+
                     } else {
                         canUpdate = true;
                     }
-                    
-                    }else {
-                            canUpdate = true;
-                    } if (canUpdate) {
-                        String updateQuery = "UPDATE w_product SET "
-                                + "name = '"+pname+"',"
-                                + "price = '"+price+"',"
-                                + "weight = '"+weight+"',"
-                                + "category_id = '"+categoryMap.get(category)+"'";
-                                MySQL.executeIUD(updateQuery);
-                        
-                    }
-                    JOptionPane.showMessageDialog(this, "Product Updated","Warning",JOptionPane.INFORMATION_MESSAGE);
-                    loadWProducts();
-                    reset();
-                   
+
+                }else {
+                    canUpdate = true;
+                } if (canUpdate) {
+                    String updateQuery = "UPDATE product SET "
+                    + "name = '"+pname+"',"
+                    + "weight = '"+weight+"',"
+                    + "category_id = '"+categoryMap.get(category)+"'";
+                    MySQL.executeIUD(updateQuery);
+
                 }
-               
-            
+                JOptionPane.showMessageDialog(this, "Product Updated","Warning",JOptionPane.INFORMATION_MESSAGE);
+                loadProducts();
+                reset();
+
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        if (evt.getClickCount() == 2) {
-            
-            int selectedRow = jTable1.getSelectedRow();
-            if (selectedRow != -1) {
-                
-                jTextField1.setText(String.valueOf(jTable1.getValueAt(selectedRow, 1)));
-                jTextField2.setText(String.valueOf(jTable1.getValueAt(selectedRow, 2)));
-                jTextField3.setText(String.valueOf(jTable1.getValueAt(selectedRow, 3)));
-                jComboBox1.setSelectedItem(String.valueOf(jTable1.getValueAt(selectedRow, 4)));
-                
-            }
-            
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        try {
+            String pname = jTextField1.getText();
+
+            MySQL.executeIUD("DELETE FROM `product` "
+                + "WHERE `name` = '"+pname+"'");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }//GEN-LAST:event_jTable1MouseClicked
+        loadProducts();
+        reset();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField3ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        MessageFormat header = new MessageFormat("I am Header of the Print Page");
+        MessageFormat footer = new MessageFormat("Page{0, number, integer}");
+        
+        try {
+            jTable1.print(JTable.PrintMode.NORMAL, header, footer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -355,23 +373,20 @@ public class wproductTable extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(wproductTable.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(productTable.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(wproductTable.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(productTable.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(wproductTable.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(productTable.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(wproductTable.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(productTable.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                wproductTable dialog = new wproductTable(new javax.swing.JFrame(), true);
+                productTable dialog = new productTable(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -387,6 +402,7 @@ public class wproductTable extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -396,14 +412,12 @@ public class wproductTable extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
 
     private void reset() {
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
-        jComboBox1.setSelectedItem("Select");
+       jTextField1.setText("");
+       jTextField3.setText("");
+       jComboBox1.setSelectedItem("Select");
     }
 }

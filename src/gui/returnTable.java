@@ -5,10 +5,16 @@
 package gui;
 
 //import com.mysql.cj.protocol.Resultset;
-//import javax.swing.table.DefaultTableModel;
-//import java.sql.ResultSet;
-//import java.util.Vector;
-//import model.MySql;
+
+
+
+
+import javax.swing.table.DefaultTableModel;
+import java.sql.ResultSet;
+
+import java.util.Vector;
+
+import model.MySQL;
 
 /**
  *
@@ -21,41 +27,57 @@ public class returnTable extends javax.swing.JDialog {
      */
     public returnTable(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        
         initComponents();
+        ReturnShowData();
+        
       //  loadreturn();
     }
- /*   
-    private void loadreturn(){
-        
-        
-        try {
-            ResultSet resultSet = MySql.executeSearch("SELECT * FROM `returns` "
-                    + "INNER JOIN `product` ON `returns`.`product_id`=`product`.`id`"
-                    + "INNER JOIN `distributor` ON `returns`.`distributor_id`=`distributor`.`id`"
-                    + "INNER JOIN `reason` ON `returns`.`reason_id`=`reason`.`id`");
-            
-            DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
-            model.setRowCount(0);
-            
-            while (resultSet.next()) {
+    
+    private void ReturnShowData() {
+ 
 
-                     Vector<String> vector = new Vector<>();
-                     vector.add(resultSet.getString("id"));
-                     vector.add(resultSet.getString("date"));
-                     vector.add(resultSet.getString("qty"));
-                     vector.add(resultSet.getString("status"));
-                     vector.add(resultSet.getString("product.name"));
-                     vector.add(resultSet.getString("distributor.name"));
-                     vector.add(resultSet.getString("reason.reason"));
-                     model.addRow(vector);
-                
+        try {
+            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM return_invoice"
+                    + "INNER JOIN outlet ON return_invoice.outlet_id = outlet.id"
+                    + "INNER JOIN distributor ON return_invoice.distributor_id = distributor.id"
+
+                    + "INNER JOIN reason ON return_invoice.reason_id = reason.id "
+                    + "INNER JOIN return_invoice_status ON return_invoice.return_invoice_status_id = return_invoice_status.id");
+
+            DefaultTableModel dtm = (DefaultTableModel) jTable1.getModel();
+            dtm.setRowCount(0);
+
+            while (resultSet.next()) {
+                Vector vector = new Vector();
+                vector.add(resultSet.getString("id"));
+                vector.add(resultSet.getString("date"));
+
+                vector.add(resultSet.getString("outlet.name"));
+                 vector.add(resultSet.getString("reason.reason"));
+                vector.add(resultSet.getString("distributor.name"));
+                vector.add(resultSet.getString("distributor.vehicle_no"));
+                vector.add(resultSet.getString("total_amount"));
+                vector.add(resultSet.getString("return_invoice_status.name"));
+
+                dtm.addRow(vector);
+
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-    }
-*/
+
+
+
+}
+    
+
+    
+
+    
+ 
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -76,15 +98,20 @@ public class returnTable extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Id", "Date", "Quantity", "Status", "Product", "Distributor", "Return Reason"
+                "Return Id", "Date", "Outlet Name", "Return Reason", "Vehicale Number", "Total amount", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, true, true, true
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(jTable1);
@@ -107,6 +134,10 @@ public class returnTable extends javax.swing.JDialog {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        
+    }//GEN-LAST:event_jTable1MouseClicked
 
     /**
      * @param args the command line arguments

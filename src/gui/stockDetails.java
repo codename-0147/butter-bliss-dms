@@ -4,10 +4,17 @@
  */
 package gui;
 
-import com.mysql.cj.protocol.Resultset;
+import java.text.SimpleDateFormat;
 import javax.swing.table.DefaultTableModel;
 import java.sql.ResultSet;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Vector;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import model.MySQL;
 
 /**
@@ -15,6 +22,9 @@ import model.MySQL;
  * @author Oshadha
  */
 public class stockDetails extends javax.swing.JDialog {
+    
+    private static HashMap<String,String> wstatusMap  = new HashMap<>();
+    private static HashMap<String,String> wproductMap = new HashMap<>();
 
     /**
      * Creates new form stockDetails
@@ -22,15 +32,17 @@ public class stockDetails extends javax.swing.JDialog {
     public stockDetails(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        loadStock();
+        loadWStock();
+        loadWstatus();
+        loadWProducts();
     }
     
-    private void loadStock(){
+    private void loadWStock(){
         
         try {
-            ResultSet resultset = MySQL.executeSearch("SELECT * FROM `stock`"
-                  + "INNER JOIN `stock_status` ON `stock`.`stock_status_id` = `stock_status`.`id` "
-                  + "INNER JOIN `product` ON `stock`.`product_id` =`product`.`id`");
+            ResultSet resultset = MySQL.executeSearch("SELECT * FROM `w_stock`"
+                  + "INNER JOIN `w_stock_status` ON `w_stock`.`w_stock_status_id` = `w_stock_status`.`id` "
+                  + "INNER JOIN `w_product` ON `w_stock`.`w_product_id` =`w_product`.`id`");
             
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0);
@@ -43,10 +55,54 @@ public class stockDetails extends javax.swing.JDialog {
                 vector.add(resultset.getString("price"));
                 vector.add(resultset.getString("mfd"));
                 vector.add(resultset.getString("exp"));
-                vector.add(resultset.getString("stock_status.type"));
-                vector.add(resultset.getString("product.name"));
+                vector.add(resultset.getString("w_stock_status.type"));
+                vector.add(resultset.getString("w_product.name"));
                 model.addRow(vector);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void loadWstatus(){
+        try{
+        ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `w_stock_status` ");
+        
+        Vector<String> vector = new Vector<>();
+        vector.add("Select");
+        
+        while (resultSet.next()) {
+            vector.add(resultSet.getString("type"));
+            wstatusMap.put(resultSet.getString("type"), resultSet.getString("id"));
+            
+            
+        }
+        DefaultComboBoxModel model = new DefaultComboBoxModel(vector);
+        jComboBox1.setModel(model);
+        
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        
+    }
+    
+    private void loadWProducts(){
+        
+        try {
+            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `w_product`");
+            
+            Vector<String> vector = new Vector<>();
+            vector.add("Select");
+            
+            while (resultSet.next()) {                
+
+            vector.add(resultSet.getString("name"));
+            wproductMap.put(resultSet.getString("name"), resultSet.getString("id"));
+            }
+            
+            DefaultComboBoxModel model = new DefaultComboBoxModel(vector);
+            jComboBox2.setModel(model);
+            
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,11 +117,32 @@ public class stockDetails extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jTextField2 = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jComboBox2 = new javax.swing.JComboBox<>();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Stock Table");
+
+        jPanel1.setBackground(new java.awt.Color(245, 219, 200));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -83,22 +160,389 @@ public class stockDetails extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
+        jLabel1.setText("Quantity");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 36)); // NOI18N
+        jLabel2.setText("Add Stock");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
+        jLabel3.setText("Price");
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
+        jLabel4.setText("MFD");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
+        jLabel5.setText("EXP");
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
+        jLabel6.setText("Warehouse Stock Status");
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
+        jLabel7.setText("Product");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jButton1.setText("Add");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Update");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Delete");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jButton4.setText("Print");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 602, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                            .addComponent(jTextField1)
+                            .addComponent(jTextField2)
+                            .addComponent(jDateChooser2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 9, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(33, 33, 33)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(11, 11, 11))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(24, 24, 24)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(28, 28, 28)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE))))
+                        .addGap(0, 29, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(9, 9, 9)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel7))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(2, 2, 2)
+                                        .addComponent(jLabel4))
+                                    .addComponent(jDateChooser1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(23, 23, 23)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5))))
+                        .addGap(27, 27, 27)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(163, 163, 163)
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(67, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+
+
+/*
+        try {
+            String qty = jTextField1.getText();
+            String price = jTextField2.getText();
+            Date mfd = jDateChooser1.getDate();
+            Date exp = jDateChooser2.getDate();
+            String status = String.valueOf(jComboBox1.getSelectedItem());
+            String product = String.valueOf(jComboBox2.getSelectedItem());
+            
+            if (qty.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please add quantity","Warning",JOptionPane.WARNING_MESSAGE);
+                
+            }else if (price.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please add price","Warning",JOptionPane.WARNING_MESSAGE);
+                
+            }else if (mfd==null) {
+                JOptionPane.showMessageDialog(this, "Please add MFD date","Warning",JOptionPane.WARNING_MESSAGE);
+            }else if (exp==null) {
+                JOptionPane.showMessageDialog(this, "Please add EXP date","Warning",JOptionPane.WARNING_MESSAGE);
+                
+            }else if (status.equals("Select")) {
+                JOptionPane.showMessageDialog(this, "Please add Stock Status","Warning",JOptionPane.WARNING_MESSAGE);
+                
+            }else if (product.equals("Select")) {
+                JOptionPane.showMessageDialog(this, "Please add product","Warning",JOptionPane.WARNING_MESSAGE);
+                
+            }else{
+                
+                ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `stock` WHERE `product_id`='"+productMap.get(product)+"'");
+                 
+                if (resultSet.next()) {
+                    MySQL.executeIUD("INSERT INTO `stock` (`qty`,`price`,`mfd`,`exp`,`stock_status_id`,`product_id`)"
+                            + "VALUES('"+qty+"','"+price+"','"+mfd+"','"+exp+"','"+statusMap.get(status)+"','"+productMap.get(product)+"')");
+                    
+                    JOptionPane.showMessageDialog(this, "New Stock Added","Warning",JOptionPane.INFORMATION_MESSAGE);
+                    
+                    loadStock();
+                    
+                }
+                
+           
+                
+           }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+try {
+    String qty = jTextField1.getText().trim();
+    String price = jTextField2.getText().trim();
+    Date mfd = jDateChooser1.getDate();
+    Date exp = jDateChooser2.getDate();
+    String status = String.valueOf(jComboBox1.getSelectedItem());
+    String product = String.valueOf(jComboBox2.getSelectedItem());
+
+    // Validations
+    if (qty.isEmpty() || price.isEmpty() || mfd == null || exp == null ||
+        status.equals("Select") || product.equals("Select")) {
+        JOptionPane.showMessageDialog(this, "Please fill all required fields properly", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Validate numbers
+    int quantity = Integer.parseInt(qty);
+    double unitPrice = Double.parseDouble(price);
+
+    // Format dates
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    String sqlMfd = sdf.format(mfd);
+    String sqlExp = sdf.format(exp);
+
+    // Check if stock already exists
+    ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `w_stock` WHERE `w_product_id`='" + wproductMap.get(product) + "'");
+
+    if (!resultSet.next()) {
+        MySQL.executeIUD("INSERT INTO `w_stock` (`qty`, `price`, `mfd`, `exp`, `w_stock_status_id`, `w_product_id`) " +
+                "VALUES('" + quantity + "','" + unitPrice + "','" + sqlMfd + "','" + sqlExp + "','" + wstatusMap.get(status) + "','" + wproductMap.get(product) + "')");
+
+        JOptionPane.showMessageDialog(this, "New Stock Added", "Information", JOptionPane.INFORMATION_MESSAGE);
+        loadWStock();
+    } else {
+        JOptionPane.showMessageDialog(this, "Stock already exists for this product", "Warning", JOptionPane.WARNING_MESSAGE);
+    }
+
+} catch (NumberFormatException ex) {
+    JOptionPane.showMessageDialog(this, "Invalid number format in quantity or price", "Warning", JOptionPane.WARNING_MESSAGE);
+} catch (Exception e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, "An error occurred while adding stock", "Error", JOptionPane.ERROR_MESSAGE);
+}
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        if (evt.getClickCount() == 2) {
+    int selectedRow = jTable1.getSelectedRow();
+    if (selectedRow != -1) {
+        jTextField1.setText(String.valueOf(jTable1.getValueAt(selectedRow, 1)));
+        jTextField2.setText(String.valueOf(jTable1.getValueAt(selectedRow, 2)));
+        
+        // Parsing the date strings to Date objects
+        String mfdString = String.valueOf(jTable1.getValueAt(selectedRow, 3));
+        String expString = String.valueOf(jTable1.getValueAt(selectedRow, 4));
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // Adjust the pattern to match your date format
+        try {
+            Date mfdDate = sdf.parse(mfdString);
+            Date expDate = sdf.parse(expString);
+            jDateChooser1.setDate(mfdDate);
+            jDateChooser2.setDate(expDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Date format error", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        jComboBox1.setSelectedItem(String.valueOf(jTable1.getValueAt(selectedRow, 5)));
+        jComboBox2.setSelectedItem(String.valueOf(jTable1.getValueAt(selectedRow, 6)));
+    }
+}
+
+      
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+
+try {
+    String qty = jTextField1.getText();
+    String price = jTextField2.getText();
+    Date mfd = jDateChooser1.getDate();
+    Date exp = jDateChooser2.getDate();
+    String status = String.valueOf(jComboBox1.getSelectedItem());
+    String product = String.valueOf(jComboBox2.getSelectedItem());
+
+    if (qty.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please add quantity", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else if (price.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please add price", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else if (mfd == null) {
+        JOptionPane.showMessageDialog(this, "Please add MFD date", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else if (exp == null) {
+        JOptionPane.showMessageDialog(this, "Please add EXP date", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else if (status.equals("Select")) {
+        JOptionPane.showMessageDialog(this, "Please add Stock Status", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else if (product.equals("Select")) {
+        JOptionPane.showMessageDialog(this, "Please add product", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else {
+        // Format dates to SQL format
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String sqlMfd = sdf.format(mfd);
+        String sqlExp = sdf.format(exp);
+
+        // Perform an update instead of insert
+        int rowsUpdated = MySQL.executeIUD("UPDATE `w_stock` SET `qty` = '" + qty + "', `price` = '" + price + "', " +
+                "`mfd` = '" + sqlMfd + "', `exp` = '" + sqlExp + "', `w_stock_status_id` = '" + wstatusMap.get(status) + "' " +
+                "WHERE `w_product_id` = '" + wproductMap.get(product) + "'");
+
+        if (rowsUpdated > 0) {
+            JOptionPane.showMessageDialog(this, "Stock Updated", "Information", JOptionPane.INFORMATION_MESSAGE);
+            loadWStock();
+        } else {
+            JOptionPane.showMessageDialog(this, "Product not found in stock", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+} catch (Exception e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    e.printStackTrace();
+}
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+       try {
+    String product = String.valueOf(jComboBox2.getSelectedItem());
+
+    // Correct DELETE statement without the `*`
+    int rowsDeleted = MySQL.executeIUD("DELETE FROM `w_stock` WHERE `w_product_id` = '" + wproductMap.get(product) + "'");
+
+    if (rowsDeleted > 0) {
+        JOptionPane.showMessageDialog(this, "Stock Deleted", "Information", JOptionPane.INFORMATION_MESSAGE);
+        loadWStock();
+    } else {
+        JOptionPane.showMessageDialog(this, "Product not found in stock", "Warning", JOptionPane.WARNING_MESSAGE);
+    }
+} catch (Exception e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    e.printStackTrace();
+}
+
+     
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        MessageFormat header = new MessageFormat("I am Header of the Print Page");
+        MessageFormat footer = new MessageFormat("Page{0, number, integer}");
+        
+        try {
+            jTable1.print(JTable.PrintMode.NORMAL, header, footer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -144,7 +588,26 @@ public class stockDetails extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private com.toedter.calendar.JDateChooser jDateChooser2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 }
