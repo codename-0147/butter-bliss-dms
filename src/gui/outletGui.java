@@ -24,7 +24,7 @@ private returnDamage rd;
 
     public void addoutletReport(){
         if (outletReport1 == null) {
-            //outletReport1 = new outletReport(this);
+          //  outletReport1 = new outletReport(this);
             jPanel1.add(outletReport1,BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel1);
             
@@ -39,7 +39,8 @@ private returnDamage rd;
     public void addoutletSales(){
         
         if (os == null) {
-            //os = new outletSales1(this);
+
+         //   os = new outletSales(this);
             jPanel1.add(os,BorderLayout.CENTER);
             SwingUtilities.updateComponentTreeUI(jPanel1);
             
@@ -54,7 +55,7 @@ private returnDamage rd;
     public void addreturnDamage(){
     
         if (rd == null) {
-          //rd = new returnDamage();
+          //rd = new returnDamage(this);
           jPanel1.add(rd,BorderLayout.CENTER);
           SwingUtilities.updateComponentTreeUI(jPanel1);  
         } else {
