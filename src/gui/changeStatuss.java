@@ -183,8 +183,8 @@ public class changeStatuss extends javax.swing.JDialog {
             if (resultset.next()) {
                  MySQL.executeIUD("UPDATE `returns` SET `status` = '"+Status+"' WHERE `id` = '"+returnID+"' ");
                  
-                  JOptionPane.showMessageDialog(this, "Status Changed.","Success",JOptionPane.WARNING_MESSAGE);
-                  SwingUtilities.updateComponentTreeUI(outletGui.jPanel1);
+//                  JOptionPane.showMessageDialog(this, "Status Changed.","Success",JOptionPane.WARNING_MESSAGE);
+//                  SwingUtilities.updateComponentTreeUI(outletGui.jPanel1);
                  
                   this.dispose();
             } else {

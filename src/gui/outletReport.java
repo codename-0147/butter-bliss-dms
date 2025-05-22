@@ -10,13 +10,13 @@ import javax.swing.SwingUtilities;
 
 public class outletReport extends javax.swing.JPanel {
     private HomeOU home;
-    private outletGui db;
+    //private outletGui db;
     
     
     public outletReport(HomeOU home) {
         initComponents();
         this.home = home;
-        this.db = db;
+        //this.db = db;
     }
 
      
