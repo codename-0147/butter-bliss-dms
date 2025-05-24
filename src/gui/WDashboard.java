@@ -26,6 +26,8 @@ public class WDashboard extends javax.swing.JPanel {
         initComponents();
         this.home = home;
         loadPendingOrdersCount();
+        loadOutletProcessedReturnsCount();
+        loadSupplierProcessedReturnsCount();
         loadLineChart();
     }
     
@@ -38,6 +40,40 @@ public class WDashboard extends javax.swing.JPanel {
                 pendingOrdersCountLabel.setText(resultSet.getString("COUNT(*)"));
             }else {
                 pendingOrdersCountLabel.setText("0");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void loadOutletProcessedReturnsCount() {
+        try {
+            ResultSet resultSet = MySQL.executeSearch("SELECT COUNT(*) FROM `return_invoice` "
+                    + "INNER JOIN `collect_return_stock_status` "
+                    + "ON `return_invoice`.`collect_return_stock_status_id` = `collect_return_stock_status`.`id` "
+                    + "WHERE `collect_return_stock_status`.`name` = 'Collected'");
+            
+            if (resultSet.next()) {
+                outProcRetCountLabel.setText(resultSet.getString("COUNT(*)"));
+            }else {
+                outProcRetCountLabel.setText("0");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void loadSupplierProcessedReturnsCount() {
+        try {
+            ResultSet resultSet = MySQL.executeSearch("SELECT COUNT(*) FROM `supplier_return_invoice` "
+                    + "INNER JOIN `supplier_return_invoice_status` "
+                    + "ON `supplier_return_invoice`.`supplier_return_invoice_status_id` = `supplier_return_invoice_status`.`id` "
+                    + "WHERE `supplier_return_invoice_status`.`name` = 'Processed'");
+            
+            if (resultSet.next()) {
+                supProcRetCountLabel.setText(resultSet.getString("COUNT(*)"));
+            }else {
+                supProcRetCountLabel.setText("0");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -161,46 +197,26 @@ public class WDashboard extends javax.swing.JPanel {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         closeLabel = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         pendingOrdersPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         pendingOrdersCountLabel = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        distDashboardButton = new javax.swing.JButton();
         chartTypeComboBox = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
+        pendingOrdersPanel1 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        outProcRetCountLabel = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        pendingOrdersPanel2 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        supProcRetCountLabel = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
         chartLoadingPanel = new javax.swing.JPanel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jButton2.setBackground(new java.awt.Color(252, 171, 77));
-        jButton2.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(0, 0, 0));
-        jButton2.setText("Returns Processed");
-        jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(111, 48, 2)));
-
-        jButton3.setBackground(new java.awt.Color(252, 171, 77));
-        jButton3.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(0, 0, 0));
-        jButton3.setText("QC Failures");
-        jButton3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(111, 48, 2)));
-
-        jLabel2.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(94, 0, 0));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("0");
-        jLabel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
-
-        jLabel3.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(94, 0, 0));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("0");
-        jLabel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
 
         closeLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/close-icon.png"))); // NOI18N
         closeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -263,10 +279,15 @@ public class WDashboard extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jButton1.setBackground(new java.awt.Color(245, 219, 200));
-        jButton1.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(0, 0, 0));
-        jButton1.setText("Distributor Dashboard");
+        distDashboardButton.setBackground(new java.awt.Color(245, 219, 200));
+        distDashboardButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        distDashboardButton.setForeground(new java.awt.Color(0, 0, 0));
+        distDashboardButton.setText("Distributor Dashboard");
+        distDashboardButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                distDashboardButtonActionPerformed(evt);
+            }
+        });
 
         chartTypeComboBox.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         chartTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sales", "Order Trends" }));
@@ -280,25 +301,109 @@ public class WDashboard extends javax.swing.JPanel {
         jLabel4.setForeground(new java.awt.Color(94, 0, 0));
         jLabel4.setText("Sales");
 
+        pendingOrdersPanel1.setBackground(new java.awt.Color(245, 219, 200));
+        pendingOrdersPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(111, 48, 2)));
+        pendingOrdersPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                pendingOrdersPanel1MouseClicked(evt);
+            }
+        });
+
+        jLabel5.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(94, 0, 0));
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText(" Out. Returns Processed");
+        jLabel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+
+        outProcRetCountLabel.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
+        outProcRetCountLabel.setForeground(new java.awt.Color(94, 0, 0));
+        outProcRetCountLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        outProcRetCountLabel.setText("0");
+
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/outlet-returns-icon.png"))); // NOI18N
+
+        javax.swing.GroupLayout pendingOrdersPanel1Layout = new javax.swing.GroupLayout(pendingOrdersPanel1);
+        pendingOrdersPanel1.setLayout(pendingOrdersPanel1Layout);
+        pendingOrdersPanel1Layout.setHorizontalGroup(
+            pendingOrdersPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pendingOrdersPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pendingOrdersPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(pendingOrdersPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addGap(18, 18, 18)
+                        .addComponent(outProcRetCountLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        pendingOrdersPanel1Layout.setVerticalGroup(
+            pendingOrdersPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pendingOrdersPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addGap(18, 18, 18)
+                .addGroup(pendingOrdersPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pendingOrdersPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(outProcRetCountLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        pendingOrdersPanel2.setBackground(new java.awt.Color(245, 219, 200));
+        pendingOrdersPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(111, 48, 2)));
+        pendingOrdersPanel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                pendingOrdersPanel2MouseClicked(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(94, 0, 0));
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel7.setText("Sup. Returns Processed");
+        jLabel7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+
+        supProcRetCountLabel.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
+        supProcRetCountLabel.setForeground(new java.awt.Color(94, 0, 0));
+        supProcRetCountLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        supProcRetCountLabel.setText("0");
+
+        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/supplier-returns-icon.png"))); // NOI18N
+
+        javax.swing.GroupLayout pendingOrdersPanel2Layout = new javax.swing.GroupLayout(pendingOrdersPanel2);
+        pendingOrdersPanel2.setLayout(pendingOrdersPanel2Layout);
+        pendingOrdersPanel2Layout.setHorizontalGroup(
+            pendingOrdersPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pendingOrdersPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pendingOrdersPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(pendingOrdersPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addGap(18, 18, 18)
+                        .addComponent(supProcRetCountLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        pendingOrdersPanel2Layout.setVerticalGroup(
+            pendingOrdersPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pendingOrdersPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel7)
+                .addGap(18, 18, 18)
+                .addGroup(pendingOrdersPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pendingOrdersPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(supProcRetCountLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addComponent(pendingOrdersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(64, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -306,12 +411,21 @@ public class WDashboard extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(closeLabel))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(chartTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton1)))
+                        .addGap(0, 18, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(chartTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(distDashboardButton))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(pendingOrdersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(pendingOrdersPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(pendingOrdersPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(26, 26, 26)))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -321,24 +435,18 @@ public class WDashboard extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(closeLabel)
                     .addComponent(jLabel6))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pendingOrdersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(pendingOrdersPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(19, 19, 19)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(pendingOrdersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(chartTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                            .addComponent(distDashboardButton)
+                            .addComponent(chartTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)))
+                    .addComponent(pendingOrdersPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -373,22 +481,39 @@ public class WDashboard extends javax.swing.JPanel {
         loadLineChart();
     }//GEN-LAST:event_chartTypeComboBoxItemStateChanged
 
+    private void distDashboardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_distDashboardButtonActionPerformed
+        HomeDB object = new HomeDB();
+        object.setVisible(true);
+    }//GEN-LAST:event_distDashboardButtonActionPerformed
+
+    private void pendingOrdersPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pendingOrdersPanel1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_pendingOrdersPanel1MouseClicked
+
+    private void pendingOrdersPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pendingOrdersPanel2MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_pendingOrdersPanel2MouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel chartLoadingPanel;
     private javax.swing.JComboBox<String> chartTypeComboBox;
     private javax.swing.JLabel closeLabel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton distDashboardButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel outProcRetCountLabel;
     private javax.swing.JLabel pendingOrdersCountLabel;
     private javax.swing.JPanel pendingOrdersPanel;
+    private javax.swing.JPanel pendingOrdersPanel1;
+    private javax.swing.JPanel pendingOrdersPanel2;
+    private javax.swing.JLabel supProcRetCountLabel;
     // End of variables declaration//GEN-END:variables
 }

@@ -9,6 +9,7 @@ import model.MySQL;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -41,7 +42,8 @@ public class WOrders extends javax.swing.JPanel {
     private void loadOrders() {
         try {
             String query = "SELECT * FROM `order` INNER JOIN `outlet` ON `order`.`outlet_id` = `outlet`.`id` "
-                    + "INNER JOIN `order_status` ON `order`.`order_status_id` = `order_status`.`id`";
+                    + "INNER JOIN `order_status` ON `order`.`order_status_id` = `order_status`.`id` "
+                    + "INNER JOIN `order_type` ON `order`.`order_type_id` = `order_type`.`id`";
             
             if (sortByComboBox.getSelectedItem().equals("Delivered Outlet ASC")) {
                 query += " WHERE `order_status`.`name` = 'Delivered' ORDER BY `outlet`.`name` ASC";
@@ -59,6 +61,14 @@ public class WOrders extends javax.swing.JPanel {
                 query += " WHERE `order_status`.`name` = 'Pending' ORDER BY `order`.`date` ASC";
             }else if (sortByComboBox.getSelectedItem().equals("Pending Date DESC")) {
                 query += " WHERE `order_status`.`name` = 'Pending' ORDER BY `order`.`date` DESC";
+            }else if (sortByComboBox.getSelectedItem().equals("Normal Outlet ASC")) {
+                query += " WHERE `order_type`.`type` = 'Normal' ORDER BY `outlet`.`name` ASC";
+            }else if (sortByComboBox.getSelectedItem().equals("Normal Outlet DESC")) {
+                query += " WHERE `order_type`.`type` = 'Normal' ORDER BY `outlet`.`name` DESC";
+            }else if (sortByComboBox.getSelectedItem().equals("Special Outlet ASC")) {
+                query += " WHERE `order_type`.`type` = 'Special' ORDER BY `outlet`.`name` DESC";
+            }else if (sortByComboBox.getSelectedItem().equals("Special Outlet DESC")) {
+                query += " WHERE `order_type`.`type` = 'Special' ORDER BY `outlet`.`name` DESC";
             }
             
             ResultSet resultSet = MySQL.executeSearch(query);
@@ -70,6 +80,8 @@ public class WOrders extends javax.swing.JPanel {
                 vector.add(resultSet.getString("order.id"));
                 vector.add(resultSet.getString("outlet.name"));
                 vector.add(resultSet.getString("order.date"));
+                vector.add(resultSet.getString("order_type.type"));
+                vector.add(resultSet.getString("order_status.name"));
                 model.addRow(vector);
             }
             
@@ -133,11 +145,11 @@ public class WOrders extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Order ID", "Outlet", "Date", "Status"
+                "Order ID", "Outlet", "Date", "Type", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -157,11 +169,11 @@ public class WOrders extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Product", "Qty"
+                "Product Name", "Product Weight", "Quantity", "Price"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -186,7 +198,7 @@ public class WOrders extends javax.swing.JPanel {
         jLabel1.setText("Sort By :");
 
         sortByComboBox.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-        sortByComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pending Date DESC", "Pending Date ASC", "Delivered Date DESC", "Delivered Date ASC", "Pending Outlet ASC", "Pending Outlet DESC", "Delivered Outlet ASC", "Delivered Outlet DESC" }));
+        sortByComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pending Date DESC", "Pending Date ASC", "Delivered Date DESC", "Delivered Date ASC", "Pending Outlet ASC", "Pending Outlet DESC", "Delivered Outlet ASC", "Delivered Outlet DESC", "Normal Outlet ASC", "Normal Outlet DESC", "Special Outlet ASC", "Special Outlet DESC" }));
         sortByComboBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 sortByComboBoxItemStateChanged(evt);
@@ -302,8 +314,8 @@ public class WOrders extends javax.swing.JPanel {
         
         try {
             ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
-                    + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `product` "
-                    + "ON `order_items`.`product_id` = `product`.`id`"
+                    + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `w_product` "
+                    + "ON `order_items`.`w_product_id` = `w_product`.`id`"
                     + "WHERE `order`.`id` = '"+String.valueOf(ordersTable.getValueAt(row, 0))+"'");
             
             DefaultTableModel model = (DefaultTableModel) orderItemsTable.getModel();
@@ -311,8 +323,10 @@ public class WOrders extends javax.swing.JPanel {
             
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
-                vector.add(resultSet.getString("product.name"));
+                vector.add(resultSet.getString("w_product.name"));
+                vector.add(resultSet.getString("w_product.weight"));
                 vector.add(resultSet.getString("order_items.qty"));
+                vector.add(resultSet.getString("w_product.price"));
                 model.addRow(vector);
             }
         } catch (Exception e) {
@@ -329,37 +343,53 @@ public class WOrders extends javax.swing.JPanel {
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void viewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewButtonActionPerformed
-        InputStream path = this.getClass().getResourceAsStream("/reports/gh_grn.jasper");
-        HashMap<String, Object> parameters = new HashMap<>();
-//        parameters.put("Parameter1", wSupervisorIDField.getText());
-//        parameters.put("Parameter2", grnIDField.getText());
-//        parameters.put("Parameter3", supplierMobileField.getText());
-//        parameters.put("Parameter4", dateTime);
-//        parameters.put("Parameter5", totalLabel.getText());
-//        parameters.put("Parameter6", paymentFormattedField.getText());
-//        parameters.put("Parameter7", balanceLabel.getText());
+        try {
+            int row = ordersTable.getSelectedRow();
         
-//        JRTableModelDataSource dataSource = new JRTableModelDataSource(grnItemTable.getModel());
-//        JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
-//        JasperViewer.viewReport(report, false);
-        reset();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select an order", "Warning", JOptionPane.WARNING_MESSAGE);
+            }else {
+                InputStream path = this.getClass().getResourceAsStream("/reports/bb_w_order_report.jasper");
+                HashMap<String, Object> parameters = new HashMap<>();
+                parameters.put("Parameter1", String.valueOf(ordersTable.getValueAt(row, 0)));
+                parameters.put("Parameter2", String.valueOf(ordersTable.getValueAt(row, 1)));
+                parameters.put("Parameter3", String.valueOf(ordersTable.getValueAt(row, 2)));
+                parameters.put("Parameter4", String.valueOf(ordersTable.getValueAt(row, 3)));
+                parameters.put("Parameter5", String.valueOf(ordersTable.getValueAt(row, 4)));
+
+                JRTableModelDataSource dataSource = new JRTableModelDataSource(orderItemsTable.getModel());
+                JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
+                JasperViewer.viewReport(report, false);
+                reset();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_viewButtonActionPerformed
 
     private void printButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printButtonActionPerformed
-        InputStream path = this.getClass().getResourceAsStream("/reports/gh_grn.jasper");
-        HashMap<String, Object> parameters = new HashMap<>();
-//        parameters.put("Parameter1", wSupervisorIDField.getText());
-//        parameters.put("Parameter2", grnIDField.getText());
-//        parameters.put("Parameter3", supplierMobileField.getText());
-//        parameters.put("Parameter4", dateTime);
-//        parameters.put("Parameter5", totalLabel.getText());
-//        parameters.put("Parameter6", paymentFormattedField.getText());
-//        parameters.put("Parameter7", balanceLabel.getText());
-        
-//        JRTableModelDataSource dataSource = new JRTableModelDataSource(grnItemTable.getModel());
-//        JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
-//        JasperPrintManager.printReport(report, false);
-        reset();
+        try {
+            int row = ordersTable.getSelectedRow();
+            
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select an order", "Warning", JOptionPane.WARNING_MESSAGE);
+            }else {
+                InputStream path = this.getClass().getResourceAsStream("/reports/bb_w_order_report.jasper");
+                HashMap<String, Object> parameters = new HashMap<>();
+                parameters.put("Parameter1", String.valueOf(ordersTable.getValueAt(row, 0)));
+                parameters.put("Parameter2", String.valueOf(ordersTable.getValueAt(row, 1)));
+                parameters.put("Parameter3", String.valueOf(ordersTable.getValueAt(row, 2)));
+                parameters.put("Parameter4", String.valueOf(ordersTable.getValueAt(row, 3)));
+                parameters.put("Parameter5", String.valueOf(ordersTable.getValueAt(row, 4)));
+
+                JRTableModelDataSource dataSource = new JRTableModelDataSource(orderItemsTable.getModel());
+                JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
+                JasperPrintManager.printReport(report, false);
+                reset();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_printButtonActionPerformed
 
 

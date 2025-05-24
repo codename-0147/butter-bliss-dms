@@ -127,6 +127,7 @@ public class WInvoice extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) invoiceItemTable.getModel();
         model.setRowCount(0);
         totalLabel.setText("0.00");
+        invoiceItemMap.clear();
     }
     
     /**
@@ -178,11 +179,11 @@ public class WInvoice extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Product ID", "Product", "Qty", "Price", "Total"
+                "Product ID", "Product Name", "Product Weight", "Quantity", "Price", "MFD", "EXP", "Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -475,29 +476,35 @@ public class WInvoice extends javax.swing.JPanel {
                     MySQL.executeIUD("INSERT INTO `w_invoice` VALUES('"+invoiceID+"', '"+dateTime+"', '"+total+"', "
                             + "'"+discount+"', '"+wSupervisorID+"', '"+orderID+"', '"+distributorID+"')");
                     
-                    ResultSet resultSet1 = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
-                            + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `product` "
-                            + "ON `order_items`.`product_id` = `product`.`id` "
-                            + "INNER JOIN `category` ON `product`.`category_id` = `category`.`id` "
-                            + "WHERE `order`.`id` = '"+orderIDField.getText()+"' "
-                            + "AND `category`.`name` = 'Drinks'");
-                    
-                    while (resultSet1.next()) {
-                        MySQL.executeIUD("UPDATE `w_stock` SET `qty` = `qty`-'"+resultSet1.getString("order_items.qty")+"' "
-                                + "WHERE `w_stock`.`product_id` = '"+resultSet1.getString("product.id")+"'");
+                    for (WInvoiceItem invoiceItem : invoiceItemMap.values()) {
+                        MySQL.executeIUD("INSERT INTO `w_invoice_item`(`qty`, `w_invoice_id`, `w_stock_id`) "
+                                + "VALUES('"+invoiceItem.getQty()+"', '"+invoiceID+"', '"+invoiceItem.getStockID()+"')");
+                        
+                        MySQL.executeIUD("UPDATE `w_stock` SET `qty` = `qty`-'"+invoiceItem.getQty()+"' "
+                                + "WHERE `id` = '"+invoiceItem.getStockID()+"'");
+                        
+                        ResultSet resultSet1 = MySQL.executeSearch("SELECT * FROM `w_stock` "
+                                + "WHERE `id` = '"+invoiceItem.getStockID()+"' AND `qty` = 0");
+                        
+                        if (resultSet1.next()) {
+                            MySQL.executeIUD("UPDATE `w_stock` SET `w_stock_status_id` = 2 "
+                                    + "WHERE `id` = '"+invoiceItem.getStockID()+"'");
+                        }
                     }
-                            
-                    InputStream path = this.getClass().getResourceAsStream("/reports/w_invoice.jasper");
+                    
+                    MySQL.executeIUD("UPDATE `order` SET `order_status_id` = 2 WHERE `id` = '"+orderID+"'");
+                    
+                    InputStream path = this.getClass().getResourceAsStream("/reports/bb_w_invoice.jasper");
                     HashMap<String, Object> parameters = new HashMap<>();
-                    parameters.put("Parameter1", wSupervisorIDLabel.getText());
-                    parameters.put("Parameter2", invoiceIDField.getText());
-                    parameters.put("Parameter3", orderIDField.getText());
-                    parameters.put("Parameter4", outletNameLabel.getText());
-                    parameters.put("Parameter5", distributorComboBox.getSelectedItem());
-                    parameters.put("Parameter6", dateTime);
-                    parameters.put("Parameter7", totalLabel.getText());
-                    parameters.put("Parameter8", discountFormattedField.getText());
-                    parameters.put("Parameter9", grandTotalLabel.getText());
+                    parameters.put("Parameter2", wSupervisorIDLabel.getText());
+                    parameters.put("Parameter1", invoiceIDField.getText());
+                    parameters.put("Parameter8", orderIDField.getText());
+                    parameters.put("Parameter3", outletNameLabel.getText());
+                    parameters.put("Parameter4", distributorComboBox.getSelectedItem());
+                    parameters.put("Parameter9", dateTime);
+                    parameters.put("Parameter5", totalLabel.getText());
+                    parameters.put("Parameter6", discountFormattedField.getText());
+                    parameters.put("Parameter7", grandTotalLabel.getText());
 
                     String appDir = new File("").getAbsolutePath(); // Get the application's directory
                     String reportsFolder = appDir + File.separator + "ExportedReports"; // Main folder path
@@ -506,14 +513,14 @@ public class WInvoice extends javax.swing.JPanel {
                     if (!mainDirectory.exists()) {
                         mainDirectory.mkdirs();
                     }
-                    // Create subfolder for "Invoice Reports" if it doesn't exist
-                    String invoiceReportsFolder = reportsFolder + File.separator + "Invoice Reports";
+                    // Create subfolder for "Warehouse Invoice Reports" if it doesn't exist
+                    String invoiceReportsFolder = reportsFolder + File.separator + "Warehouse Invoice Reports";
                     File invoiceDirectory = new File(invoiceReportsFolder);
                     if (!invoiceDirectory.exists()) {
                         invoiceDirectory.mkdirs();
                     }
-                    // Path to export the PDF file (inside "Invoice Reports" subfolder)
-                    String outputPath = invoiceReportsFolder + File.separator + "Invoice_report_" + invoiceID + ".pdf";
+                    // Path to export the PDF file (inside "Warehouse Invoice Reports" subfolder)
+                    String outputPath = invoiceReportsFolder + File.separator + "Warehouse_Invoice_report_" + invoiceID + ".pdf";
 
                     JRTableModelDataSource dataSource = new JRTableModelDataSource(invoiceItemTable.getModel());
                     JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);

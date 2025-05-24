@@ -7,9 +7,11 @@ package gui;
 import model.MySQL;
 import java.sql.ResultSet;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import model.WInvoiceItem;
 
 /**
  *
@@ -163,32 +165,148 @@ public class WSelectOrder extends javax.swing.JDialog {
         if (evt.getClickCount() == 2) {
             try {
                 if (invoice != null) {
-                    invoice.getorderIDField().setText(String.valueOf(pendingOrdersTable.getValueAt(row, 0)));
-                    invoice.getoutletNameLabel().setText(String.valueOf(pendingOrdersTable.getValueAt(row, 1)));
-                    
-                    ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
-                            + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `product` "
-                            + "ON `order_items`.`product_id` = `product`.`id` "
+                    ResultSet resultSet1 = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
+                            + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `w_product` "
+                            + "ON `order_items`.`w_product_id` = `w_product`.`id` INNER JOIN `w_stock` "
+                            + "ON `w_product`.`id` = `w_stock`.`w_product_id` "
                             + "WHERE `order`.`id` = '"+String.valueOf(pendingOrdersTable.getValueAt(row, 0))+"'");
-                
-                    DefaultTableModel model = (DefaultTableModel) invoice.getinvoiceItemTable().getModel();
-                    model.setRowCount(0);
-                    total = 0;
+                    String orderQty;
+                    String availableQty;
+                    
+                    if (resultSet1.next()) {
+                        orderQty = String.valueOf(resultSet1.getString("order_item.qty"));
+                        availableQty = String.valueOf(resultSet1.getString("w_stock.qty"));
+                        
+                        if (Double.parseDouble(orderQty) > Double.parseDouble(availableQty) && Double.parseDouble(availableQty) > 0) {
+                            JOptionPane.showMessageDialog(this, "Available stock quantity is not enough", 
+                                    "Warning", JOptionPane.WARNING_MESSAGE);
+                        }else if (Double.parseDouble(orderQty) > Double.parseDouble(availableQty) && Double.parseDouble(availableQty) == 0) {
+                            JOptionPane.showMessageDialog(this, "Out of stock", 
+                                    "Warning", JOptionPane.WARNING_MESSAGE);
+                        }else {
+                            invoice.getorderIDField().setText(String.valueOf(pendingOrdersTable.getValueAt(row, 0)));
+                            invoice.getoutletNameLabel().setText(String.valueOf(pendingOrdersTable.getValueAt(row, 1)));
 
-                    while (resultSet.next()) {
-                        Vector<String> vector = new Vector<>();
-                        vector.add(resultSet.getString("product.id"));
-                        vector.add(resultSet.getString("product.name"));
-                        vector.add(resultSet.getString("order_items.qty"));
-                        vector.add(resultSet.getString("product.price"));
-                        double itemTotal = Double.parseDouble(resultSet.getString("order_items.qty")) * Double.parseDouble(resultSet.getString("product.price"));
-                        total += itemTotal;
-                        vector.add(String.valueOf(itemTotal));
-                        model.addRow(vector);
+                            ResultSet resultSet2 = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
+                                    + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `w_product` "
+                                    + "ON `order_items`.`w_product_id` = `w_product`.`id` INNER JOIN `w_stock` "
+                                    + "ON `w_product`.`id` = `w_stock`.`w_product_id` "
+                                    + "WHERE `order`.`id` = '"+String.valueOf(pendingOrdersTable.getValueAt(row, 0))+"'");
+
+                            String stockID;
+                            String productID;
+                            String productName;
+                            String productWeight;
+                            String qty;
+                            String price;
+                            String mfd;
+                            String exp;
+
+                            DefaultTableModel model = (DefaultTableModel) invoice.getinvoiceItemTable().getModel();
+                            model.setRowCount(0);
+                            total = 0;
+
+                            while (resultSet2.next()) {
+                                stockID = String.valueOf(resultSet2.getString("w_stock.id"));
+                                productID = String.valueOf(resultSet2.getString("w_product.id"));
+                                productName = String.valueOf(resultSet2.getString("w_product.name"));
+                                productWeight = String.valueOf(resultSet2.getString("w_product.weight"));
+                                qty = String.valueOf(resultSet2.getString("order_items.qty"));
+                                price = String.valueOf(resultSet2.getString("w_product.price"));
+                                mfd = String.valueOf(resultSet2.getString("w_stock.mfd"));
+                                exp = String.valueOf(resultSet2.getString("w_stock.exp"));
+
+                                Vector<String> vector = new Vector<>();
+                                vector.add(resultSet2.getString("w_product.id"));
+                                vector.add(resultSet2.getString("w_product.name"));
+                                vector.add(resultSet2.getString("w_product.weight"));
+                                vector.add(resultSet2.getString("order_items.qty"));
+                                vector.add(resultSet2.getString("w_product.price"));
+                                vector.add(resultSet2.getString("w_stock.mfd"));
+                                vector.add(resultSet2.getString("w_stock.exp"));
+                                double itemTotal = Double.parseDouble(resultSet2.getString("order_items.qty")) * Double.parseDouble(resultSet2.getString("w_product.price"));
+                                total += itemTotal;
+                                vector.add(String.valueOf(itemTotal));
+                                model.addRow(vector);
+
+                                WInvoiceItem wInvoiceItem = new WInvoiceItem();
+                                wInvoiceItem.setStockID(stockID);
+                                wInvoiceItem.setProductID(productID);
+                                wInvoiceItem.setProductName(productName);
+                                wInvoiceItem.setProductWeight(productWeight);
+                                wInvoiceItem.setQty(qty);
+                                wInvoiceItem.setPrice(price);
+                                wInvoiceItem.setMfd(mfd);
+                                wInvoiceItem.setExp(exp);
+
+                                if (invoice.invoiceItemMap.get(stockID) == null) {
+                                    invoice.invoiceItemMap.put(stockID, wInvoiceItem);
+                                }
+                            }
+                        }
                     }
                     
-                    invoice.gettotalLabel().setText(String.valueOf(total));
+//                    invoice.getorderIDField().setText(String.valueOf(pendingOrdersTable.getValueAt(row, 0)));
+//                    invoice.getoutletNameLabel().setText(String.valueOf(pendingOrdersTable.getValueAt(row, 1)));
+//                    
+//                    ResultSet resultSet2 = MySQL.executeSearch("SELECT * FROM `order` INNER JOIN `order_items` "
+//                            + "ON `order`.`id` = `order_items`.`order_id` INNER JOIN `w_product` "
+//                            + "ON `order_items`.`w_product_id` = `w_product`.`id` INNER JOIN `w_stock` "
+//                            + "ON `w_product`.`id` = `w_stock`.`w_product_id` "
+//                            + "WHERE `order`.`id` = '"+String.valueOf(pendingOrdersTable.getValueAt(row, 0))+"'");
+//                
+//                    String stockID;
+//                    String productID;
+//                    String productName;
+//                    String productWeight;
+//                    String qty;
+//                    String price;
+//                    String mfd;
+//                    String exp;
+//                    
+//                    DefaultTableModel model = (DefaultTableModel) invoice.getinvoiceItemTable().getModel();
+//                    model.setRowCount(0);
+//                    total = 0;
+//
+//                    while (resultSet2.next()) {
+//                        stockID = String.valueOf(resultSet2.getString("w_stock.id"));
+//                        productID = String.valueOf(resultSet2.getString("w_product.id"));
+//                        productName = String.valueOf(resultSet2.getString("w_product.name"));
+//                        productWeight = String.valueOf(resultSet2.getString("w_product.weight"));
+//                        qty = String.valueOf(resultSet2.getString("order_items.qty"));
+//                        price = String.valueOf(resultSet2.getString("w_product.price"));
+//                        mfd = String.valueOf(resultSet2.getString("w_stock.mfd"));
+//                        exp = String.valueOf(resultSet2.getString("w_stock.exp"));
+//                        
+//                        Vector<String> vector = new Vector<>();
+//                        vector.add(resultSet2.getString("w_product.id"));
+//                        vector.add(resultSet2.getString("w_product.name"));
+//                        vector.add(resultSet2.getString("w_product.weight"));
+//                        vector.add(resultSet2.getString("order_items.qty"));
+//                        vector.add(resultSet2.getString("w_product.price"));
+//                        vector.add(resultSet2.getString("w_stock.mfd"));
+//                        vector.add(resultSet2.getString("w_stock.exp"));
+//                        double itemTotal = Double.parseDouble(resultSet2.getString("order_items.qty")) * Double.parseDouble(resultSet2.getString("w_product.price"));
+//                        total += itemTotal;
+//                        vector.add(String.valueOf(itemTotal));
+//                        model.addRow(vector);
+//                        
+//                        WInvoiceItem wInvoiceItem = new WInvoiceItem();
+//                        wInvoiceItem.setStockID(stockID);
+//                        wInvoiceItem.setProductID(productID);
+//                        wInvoiceItem.setProductName(productName);
+//                        wInvoiceItem.setProductWeight(productWeight);
+//                        wInvoiceItem.setQty(qty);
+//                        wInvoiceItem.setPrice(price);
+//                        wInvoiceItem.setMfd(mfd);
+//                        wInvoiceItem.setExp(exp);
+//                        
+//                        if (invoice.invoiceItemMap.get(stockID) == null) {
+//                            invoice.invoiceItemMap.put(stockID, wInvoiceItem);
+//                        }
+//                    }
                     
+                    invoice.gettotalLabel().setText(String.valueOf(total));
                     this.dispose();
                 }
             } catch (Exception e) {

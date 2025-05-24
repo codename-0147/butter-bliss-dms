@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import model.MySQL;
 import java.sql.ResultSet;
+import javax.swing.JFormattedTextField;
 import model.WGrnItem;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -54,8 +55,8 @@ public class WGrn extends javax.swing.JPanel {
         grnIDField.setText(String.valueOf(id));
     }
     
-    public JTextField getSupplierMobileField() {
-        return supplierMobileField;
+    public JTextField getSupplierIDField() {
+        return supplierIDField;
     }
     
     public JLabel getSupplierNameLabel() {
@@ -66,12 +67,20 @@ public class WGrn extends javax.swing.JPanel {
         return productIDField;
     }
     
-    public JLabel getProductBrandLabel() {
-        return productBrandLabel;
+    public JLabel getProductWeightLabel() {
+        return productWeightLabel;
     }
     
     public JLabel getProductNameLabel() {
         return productNameLabel;
+    }
+    
+    public JFormattedTextField getSellingPriceFormattedField() {
+        return sellingPriceFormattedField;
+    }
+    
+    public JFormattedTextField getPaymentFormattedField() {
+        return paymentFormattedField;
     }
     
     private void loadGrnItems() {
@@ -82,8 +91,8 @@ public class WGrn extends javax.swing.JPanel {
         for (WGrnItem grnItem : wGrnItemMap.values()) {
             Vector<String> vector = new Vector<>();
             vector.add(grnItem.getProductId());
-            vector.add(grnItem.getBrandName());
             vector.add(grnItem.getProductName());
+            vector.add(grnItem.getProductWeight());
             vector.add(String.valueOf(grnItem.getQty()));
             vector.add(String.valueOf(grnItem.getBuyingPrice()));
             vector.add(String.valueOf(grnItem.getSellingPrice()));
@@ -95,16 +104,22 @@ public class WGrn extends javax.swing.JPanel {
             model.addRow(vector);
         }
         
-        totalLabel.setText(String.valueOf(total));
+        if (supplierNameLabel.getText().equals("Production Dep")) {
+            totalLabel.setText("0.00");
+        }else if (typeComboBox.getSelectedItem().equals("Return Stock")) {
+            totalLabel.setText("0.00");
+        }else {
+            totalLabel.setText(String.valueOf(total));
+        }
     }
 
     private void reset() {
         generateGRNId();
-        supplierMobileField.setText("");
+        supplierIDField.setText("");
         supplierNameLabel.setText("SUPPLIER NAME");
         productIDField.setText("");
         qtyFormattedField.setText("0");
-        productBrandLabel.setText("BRAND NAME");
+        productWeightLabel.setText("PRODUCT WEIGHT");
         productNameLabel.setText("PRODUCT NAME");
         buyingPriceFormattedField.setText("0");
         sellingPriceFormattedField.setText("0");
@@ -115,6 +130,9 @@ public class WGrn extends javax.swing.JPanel {
         totalLabel.setText("0.00");
         paymentFormattedField.setText("0");
         balanceLabel.setText("0.00");
+        paymentFormattedField.setEnabled(true);
+        typeComboBox.setSelectedIndex(0);
+        wGrnItemMap.clear();
     }
     
     /**
@@ -133,14 +151,14 @@ public class WGrn extends javax.swing.JPanel {
         jLabel13 = new javax.swing.JLabel();
         grnIDField = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
-        supplierMobileField = new javax.swing.JTextField();
+        supplierIDField = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         productIDField = new javax.swing.JTextField();
         selectSupplierButton = new javax.swing.JButton();
         supplierNameLabel = new javax.swing.JLabel();
         selectProductButton = new javax.swing.JButton();
         jLabel16 = new javax.swing.JLabel();
-        productBrandLabel = new javax.swing.JLabel();
+        productWeightLabel = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         productNameLabel = new javax.swing.JLabel();
         closeLabel = new javax.swing.JLabel();
@@ -167,6 +185,8 @@ public class WGrn extends javax.swing.JPanel {
         balanceLabel = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         saveNPrintButton = new javax.swing.JButton();
+        typeComboBox = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -189,8 +209,8 @@ public class WGrn extends javax.swing.JPanel {
         jLabel14.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel14.setText("Supplier Mobile :");
 
-        supplierMobileField.setEditable(false);
-        supplierMobileField.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        supplierIDField.setEditable(false);
+        supplierIDField.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
 
         jLabel15.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel15.setText("Product ID :");
@@ -226,12 +246,12 @@ public class WGrn extends javax.swing.JPanel {
         });
 
         jLabel16.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-        jLabel16.setText("Brand :");
+        jLabel16.setText("Weight :");
 
-        productBrandLabel.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-        productBrandLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        productBrandLabel.setText("BRAND NAME");
-        productBrandLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+        productWeightLabel.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        productWeightLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        productWeightLabel.setText("PRODUCT WEIGHT");
+        productWeightLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
 
         jLabel17.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel17.setText("Product :");
@@ -259,6 +279,7 @@ public class WGrn extends javax.swing.JPanel {
         jLabel6.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel6.setText("Selling Price :");
 
+        sellingPriceFormattedField.setEditable(false);
         sellingPriceFormattedField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         sellingPriceFormattedField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         sellingPriceFormattedField.setText("0");
@@ -324,7 +345,7 @@ public class WGrn extends javax.swing.JPanel {
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel14)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(supplierMobileField, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(supplierIDField, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -340,7 +361,7 @@ public class WGrn extends javax.swing.JPanel {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(qtyFormattedField)
                             .addComponent(productIDField)
-                            .addComponent(productBrandLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(productWeightLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(productNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                             .addComponent(selectProductButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -390,9 +411,9 @@ public class WGrn extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel14)
-                        .addComponent(supplierMobileField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(supplierIDField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel16)
-                        .addComponent(productBrandLabel)
+                        .addComponent(productWeightLabel)
                         .addComponent(jLabel7))
                     .addComponent(mfdDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -426,7 +447,7 @@ public class WGrn extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Product ID", "Brand", "Product", "Quantity", "Buying Price", "Selling Price", "MFD", "EXP", "Total"
+                "Product ID", "Product Name", "Product Weight", "Quantity", "Buying Price", "Selling Price", "MFD", "EXP", "Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -499,17 +520,33 @@ public class WGrn extends javax.swing.JPanel {
             }
         });
 
+        typeComboBox.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        typeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "New Stock", "Return Stock", " " }));
+        typeComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                typeComboBoxItemStateChanged(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel1.setText("Type :");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel21)
-                            .addComponent(jLabel19)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(typeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(73, 73, 73)
+                                .addComponent(jLabel19))
                             .addComponent(jLabel20))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -517,7 +554,7 @@ public class WGrn extends javax.swing.JPanel {
                             .addComponent(paymentFormattedField, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(totalLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(saveNPrintButton, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -525,7 +562,9 @@ public class WGrn extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel19)
-                    .addComponent(totalLabel))
+                    .addComponent(totalLabel)
+                    .addComponent(typeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(paymentFormattedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -576,7 +615,7 @@ public class WGrn extends javax.swing.JPanel {
     }//GEN-LAST:event_selectProductButtonActionPerformed
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        String supplierMobile = supplierMobileField.getText();
+        String supplierMobile = supplierIDField.getText();
         String productID = productIDField.getText();
         String qty  = qtyFormattedField.getText();
         String buying_price = buyingPriceFormattedField.getText();
@@ -620,7 +659,7 @@ public class WGrn extends javax.swing.JPanel {
         }else {
             WGrnItem grnItem = new WGrnItem();
             grnItem.setProductId(productIDField.getText());
-            grnItem.setBrandName(productBrandLabel.getText());
+            grnItem.setProductWeight(productWeightLabel.getText());
             grnItem.setProductName(productNameLabel.getText());
             grnItem.setQty(Double.parseDouble(qty));
             grnItem.setBuyingPrice(Double.parseDouble(buying_price));
@@ -649,7 +688,7 @@ public class WGrn extends javax.swing.JPanel {
         
         productIDField.setText("");
         qtyFormattedField.setText("0");
-        productBrandLabel.setText("BRAND NAME");
+        productWeightLabel.setText("PRODUCT WEIGHT");
         productNameLabel.setText("PRODUCT NAME");
         buyingPriceFormattedField.setText("0");
         sellingPriceFormattedField.setText("0");
@@ -685,7 +724,7 @@ public class WGrn extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "This grn already exists", "Warning", JOptionPane.WARNING_MESSAGE);
             }else {
                 String grnId = grnIDField.getText();
-                String supplierMobile = supplierMobileField.getText();
+                String supplierID = supplierIDField.getText();
                 String wSupervisorID = wSupervisorIDField.getText();
                 String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
                 String paidAmount = paymentFormattedField.getText();
@@ -694,13 +733,13 @@ public class WGrn extends javax.swing.JPanel {
 
                 if (rowCount == 0) {
                     JOptionPane.showMessageDialog(this, "Please add GRN item(s) to GRN", "Warning", JOptionPane.WARNING_MESSAGE);
-                }else {
-                    MySQL.executeIUD("INSERT INTO `w_grn` VALUES('"+grnId+"', '"+supplierMobile+"', '"+dateTime+"', "
-                        + "'"+wSupervisorID+"', '"+paidAmount+"')");
+                }else if (typeComboBox.getSelectedItem().equals("New Stock")) {
+                    MySQL.executeIUD("INSERT INTO `w_grn` VALUES('"+grnId+"', '"+supplierID+"', '"+dateTime+"', "
+                        + "'"+wSupervisorID+"', '"+paidAmount+"', 1)");
 
                     for (WGrnItem grnItem : wGrnItemMap.values()) {
                         ResultSet resultSet1 = MySQL.executeSearch("SELECT * FROM `w_stock` WHERE "
-                                + "`product_id` = '"+grnItem.getProductId()+"' AND "
+                                + "`w_product_id` = '"+grnItem.getProductId()+"' AND "
                                 + "`price` = '"+grnItem.getSellingPrice()+"' AND "
                                 + "`mfd` = '"+grnItem.getMfd()+"' AND "
                                 + "`exp` = '"+grnItem.getExp()+"'");
@@ -712,13 +751,13 @@ public class WGrn extends javax.swing.JPanel {
                             String updatedQty = String.valueOf(Double.parseDouble(currentQty) + grnItem.getQty());
                             MySQL.executeIUD("UPDATE `w_stock` SET `qty` = '"+updatedQty+"' WHERE `id` = '"+stockID+"'");
                         }else {
-                            MySQL.executeIUD("INSERT INTO `w_stock`(`price`, `qty`, `mfd`, `exp`, `product_id`) "
-                                    + "VALUES('"+grnItem.getSellingPrice()+"', '"+grnItem.getQty()+"', "
+                            MySQL.executeIUD("INSERT INTO `w_stock`(`price`, `qty`, `mfd`, `exp`, `w_product_id`, "
+                                    + "`w_stock_status_id`) VALUES('"+grnItem.getSellingPrice()+"', '"+grnItem.getQty()+"', "
                                     + "'"+grnItem.getMfd()+"', '"+grnItem.getExp()+"', "
-                                    + "'"+grnItem.getProductId()+"')");
+                                    + "'"+grnItem.getProductId()+"', 1)");
 
                             ResultSet resultSet2 = MySQL.executeSearch("SELECT * FROM `w_stock` WHERE "
-                                    + "`product_id` = '"+grnItem.getProductId()+"' AND "
+                                    + "`w_product_id` = '"+grnItem.getProductId()+"' AND "
                                     + "`price` = '"+grnItem.getSellingPrice()+"' AND "
                                     + "`mfd` = '"+grnItem.getMfd()+"' AND "
                                     + "`exp` = '"+grnItem.getExp()+"'");
@@ -731,17 +770,17 @@ public class WGrn extends javax.swing.JPanel {
                         MySQL.executeIUD("INSERT INTO `w_grn_item`(`w_grn_id`, `qty`, `price`, `w_stock_id`) "
                                 + "VALUES('"+grnId+"', '"+grnItem.getQty()+"', '"+grnItem.getBuyingPrice()+"', '"+stockID+"')");
                     }
-                    
-                    InputStream path = this.getClass().getResourceAsStream("/reports/gh_grn.jasper");
+
+                    InputStream path = this.getClass().getResourceAsStream("/reports/bb_w_grn.jasper");
                     HashMap<String, Object> parameters = new HashMap<>();
                     parameters.put("Parameter1", wSupervisorIDField.getText());
                     parameters.put("Parameter2", grnIDField.getText());
-                    parameters.put("Parameter3", supplierMobileField.getText());
+                    parameters.put("Parameter3", supplierIDField.getText());
                     parameters.put("Parameter4", dateTime);
                     parameters.put("Parameter5", totalLabel.getText());
                     parameters.put("Parameter6", paymentFormattedField.getText());
                     parameters.put("Parameter7", balanceLabel.getText());
-                    
+
                     String appDir = new File("").getAbsolutePath(); // Get the application's directory
                     String reportsFolder = appDir + File.separator + "ExportedReports"; // Main folder path
                     // Create the main "ExportedReports" folder if it doesn't exist
@@ -749,21 +788,110 @@ public class WGrn extends javax.swing.JPanel {
                     if (!mainDirectory.exists()) {
                         mainDirectory.mkdirs();
                     }
-                    // Create subfolder for "Grn Reports" if it doesn't exist
-                    String grnReportsFolder = reportsFolder + File.separator + "Grn Reports";
+                    // Create subfolder for "Warehouse Grn Reports" if it doesn't exist
+                    String grnReportsFolder = reportsFolder + File.separator + "Warehouse Grn Reports";
                     File grnDirectory = new File(grnReportsFolder);
                     if (!grnDirectory.exists()) {
                         grnDirectory.mkdirs();
                     }
-                    // Path to export the PDF file (inside "Grn Reports" subfolder)
-                    String outputPath = grnReportsFolder + File.separator + "Grn_report_" + grnId + ".pdf";
-                    
+                    // Path to export the PDF file (inside "Warehouse Grn Reports" subfolder)
+                    String outputPath = grnReportsFolder + File.separator + "Warehouse_Grn_report_" + grnId + ".pdf";
+
                     JRTableModelDataSource dataSource = new JRTableModelDataSource(grnItemTable.getModel());
                     JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
                     JasperViewer.viewReport(report, false);
                     JasperPrintManager.printReport(report, false);
                     JasperExportManager.exportReportToPdfFile(report, outputPath);
                     reset();
+                }else if (typeComboBox.getSelectedItem().equals("Return Stock")) {
+                    if (supplierNameLabel.getText().equals("Production Dep")) {
+                        JOptionPane.showMessageDialog(this, "Invalid Supplier", "Warning", JOptionPane.WARNING_MESSAGE);
+                    }else {
+                        MySQL.executeIUD("INSERT INTO `w_grn` VALUES('"+grnId+"', '"+supplierID+"', '"+dateTime+"', "
+                        + "'"+wSupervisorID+"', '"+paidAmount+"')");
+
+                        for (WGrnItem grnItem : wGrnItemMap.values()) {
+                            String stockID = "";
+
+                            MySQL.executeIUD("INSERT INTO `w_stock`(`price`, `qty`, `mfd`, `exp`, `product_id`) "
+                                    + "VALUES('"+grnItem.getSellingPrice()+"', '"+grnItem.getQty()+"', "
+                                    + "'"+grnItem.getMfd()+"', '"+grnItem.getExp()+"', "
+                                    + "'"+grnItem.getProductId()+"')");
+
+                            ResultSet resultSet1 = MySQL.executeSearch("SELECT * FROM `w_stock` WHERE "
+                                    + "`product_id` = '"+grnItem.getProductId()+"' AND "
+                                    + "`price` = '"+grnItem.getSellingPrice()+"' AND "
+                                    + "`mfd` = '"+grnItem.getMfd()+"' AND "
+                                    + "`exp` = '"+grnItem.getExp()+"'");
+
+                            if (resultSet1.next()) {
+                                stockID = resultSet1.getString("id");
+                            }
+
+                            MySQL.executeIUD("INSERT INTO `w_grn_item`(`w_grn_id`, `qty`, `price`, `w_stock_id`) "
+                                    + "VALUES('"+grnId+"', '"+grnItem.getQty()+"', '"+grnItem.getBuyingPrice()+"', "
+                                            + "'"+stockID+"')");
+                            
+                            ResultSet resultSet2 = MySQL.executeSearch("SELECT * FROM `returning_stock` "
+                                    + "INNER JOIN `w_stock` ON `returning_stock`.`w_stock_id` = `w_stock`.`id` "
+                                    + "INNER JOIN `w_grn_item` ON `w_stock`.`id` = `w_grn_item`.`w_stock_id` "
+                                    + "INNER JOIN `w_grn` ON `w_grn_item`.`w_grn_id` = `w_grn`.`id` "
+                                    + "INNER JOIN `supplier` ON `w_grn`.`supplier_id` = `supplier`.`id` "
+                                    + "INNER JOIN `w_product` ON `w_stock`.`w_product_id` = `w_product`.`id` "
+                                    + "INNER JOIN `supplier_return_invoice_item` "
+                                    + "ON `supplier_return_invoice_item.`returning_stock_id` = `returning_stock`.`id` "
+                                    + "INNER JOIN `supplier_return_invoice` "
+                                    + "ON `supplier_return_invoice_item`.`supplier_return_invoice_id` = "
+                                    + "`supplier_return_invoice`.`id` "
+                                    + "WHERE `returning_stock`.`qty` = '"+grnItem.getQty()+"' "
+                                    + "AND `w_grn_item`.`price` = '"+grnItem.getBuyingPrice()+"' "
+                                    + "AND `supplier`.`id` = '"+supplierID+"' "
+                                    + "AND `w_product`.`id` = '"+grnItem.getProductId()+"'");
+                            
+                            if (resultSet2.next()) {
+                                MySQL.executeIUD("UPDATE `returning_stock` SET `returning_stock_status_id` = 2 "
+                                        + "WHERE `returning_stock`.`id` = '"+resultSet2.getString("returning_stock.id")+"'");
+                                
+                                MySQL.executeIUD("UPDATE `supplier_return_invoice` "
+                                        + "SET `supplier_return_invoice_status_id` = 2 "
+                                        + "WHERE `supplier_return_invoice`.`id` = "
+                                        + "'"+resultSet2.getString("supplier_return_invoice.id")+"'");
+                            }
+                        }
+
+                        InputStream path = this.getClass().getResourceAsStream("/reports/bb_w_grn.jasper");
+                        HashMap<String, Object> parameters = new HashMap<>();
+                        parameters.put("Parameter1", wSupervisorIDField.getText());
+                        parameters.put("Parameter2", grnIDField.getText());
+                        parameters.put("Parameter3", supplierIDField.getText());
+                        parameters.put("Parameter4", dateTime);
+                        parameters.put("Parameter5", totalLabel.getText());
+                        parameters.put("Parameter6", paymentFormattedField.getText());
+                        parameters.put("Parameter7", balanceLabel.getText());
+
+                        String appDir = new File("").getAbsolutePath(); // Get the application's directory
+                        String reportsFolder = appDir + File.separator + "ExportedReports"; // Main folder path
+                        // Create the main "ExportedReports" folder if it doesn't exist
+                        File mainDirectory = new File(reportsFolder);
+                        if (!mainDirectory.exists()) {
+                            mainDirectory.mkdirs();
+                        }
+                        // Create subfolder for "Warehouse Grn Reports" if it doesn't exist
+                        String grnReportsFolder = reportsFolder + File.separator + "Warehouse Grn Reports";
+                        File grnDirectory = new File(grnReportsFolder);
+                        if (!grnDirectory.exists()) {
+                            grnDirectory.mkdirs();
+                        }
+                        // Path to export the PDF file (inside "Warehouse Grn Reports" subfolder)
+                        String outputPath = grnReportsFolder + File.separator + "Warehouse_Grn_report_" + grnId + ".pdf";
+
+                        JRTableModelDataSource dataSource = new JRTableModelDataSource(grnItemTable.getModel());
+                        JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
+                        JasperViewer.viewReport(report, false);
+                        JasperPrintManager.printReport(report, false);
+                        JasperExportManager.exportReportToPdfFile(report, outputPath);
+                        reset();
+                    }
                 }
             }
         } catch (Exception e) {
@@ -771,6 +899,18 @@ public class WGrn extends javax.swing.JPanel {
             //logger.log(Level.WARNING, "Exception", e);
         }
     }//GEN-LAST:event_saveNPrintButtonActionPerformed
+
+    private void typeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_typeComboBoxItemStateChanged
+        if (typeComboBox.getSelectedItem().equals("New Stock")) {
+            if (supplierNameLabel.getText().equals("Production Dep")) {
+                getPaymentFormattedField().setEnabled(false);
+            }else {
+                getPaymentFormattedField().setEnabled(true);
+            }
+        }else if (typeComboBox.getSelectedItem().equals("Return Stock")) {
+            getPaymentFormattedField().setEnabled(false);
+        }
+    }//GEN-LAST:event_typeComboBoxItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -781,6 +921,7 @@ public class WGrn extends javax.swing.JPanel {
     private com.toedter.calendar.JDateChooser expDateChooser;
     private javax.swing.JTextField grnIDField;
     private javax.swing.JTable grnItemTable;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
@@ -802,18 +943,19 @@ public class WGrn extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private com.toedter.calendar.JDateChooser mfdDateChooser;
     private javax.swing.JFormattedTextField paymentFormattedField;
-    private javax.swing.JLabel productBrandLabel;
     private javax.swing.JTextField productIDField;
     private javax.swing.JLabel productNameLabel;
+    private javax.swing.JLabel productWeightLabel;
     private javax.swing.JFormattedTextField qtyFormattedField;
     private javax.swing.JButton resetButton;
     private javax.swing.JButton saveNPrintButton;
     private javax.swing.JButton selectProductButton;
     private javax.swing.JButton selectSupplierButton;
     private javax.swing.JFormattedTextField sellingPriceFormattedField;
-    private javax.swing.JTextField supplierMobileField;
+    private javax.swing.JTextField supplierIDField;
     private javax.swing.JLabel supplierNameLabel;
     private javax.swing.JLabel totalLabel;
+    private javax.swing.JComboBox<String> typeComboBox;
     private javax.swing.JTextField wSupervisorIDField;
     // End of variables declaration//GEN-END:variables
 }

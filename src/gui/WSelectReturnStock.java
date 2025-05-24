@@ -9,7 +9,6 @@ import model.MySQL;
 import java.sql.ResultSet;
 import java.util.Vector;
 //import java.util.logging.Level;
-import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -18,33 +17,44 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author barth
  */
-public class SelectProduct extends javax.swing.JDialog {
-    private WGrn wGrn;
+public class WSelectReturnStock extends javax.swing.JDialog {
+    private WReturns wReturns;
+    
     /**
      * Creates new form CompanyRegistration
      */
-    public SelectProduct(java.awt.Frame parent, boolean modal, WGrn wGrn) {
+    public WSelectReturnStock(java.awt.Frame parent, boolean modal, WReturns wReturns) {
         super(parent, modal);
-        this.wGrn = wGrn;
+        this.wReturns = wReturns;
         initComponents();
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
-        productsTable.setDefaultRenderer(Object.class, renderer);
-        loadProducts();
+        returnStockTable.setDefaultRenderer(Object.class, renderer);
+        loadStock();
     }
     
-    private void loadProducts() {
+    private void loadStock() {
         try {
-            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `w_product`");
-            DefaultTableModel model = (DefaultTableModel)productsTable.getModel();
+            String query = "SELECT * FROM `returning_stock` INNER JOIN `w_stock` "
+                    + "ON `returning_stock`.`w_stock_id` = `w_stock`.`id` INNER JOIN `w_grn_item` "
+                    + "ON `w_stock`.`id` = `w_grn_item`.`w_stock_id` INNER JOIN `w_grn` "
+                    + "ON `w_grn_item`.`w_grn_id` = `w_grn`.`id` INNER JOIN `w_product` "
+                    + "ON `w_stock`.`w_product_id` = `w_product`.`id` INNER JOIN `supplier` "
+                    + "ON `w_grn`.`supplier_id` = `supplier`.`id` INNER JOIN `returning_stock_status` "
+                    + "ON `returning_stock`.`returning_stock_status_id` = `returning_stock_status`.`id` "
+                    + "WHERE `supplier`.`id` = '"+wReturns.suppliersMap.get(wReturns.getsupplierEmailLabel().getText())+"' "
+                    + "AND `returning_stock_status`.`name` = 'Pending'";
+            ResultSet resultSet = MySQL.executeSearch(query);
+            DefaultTableModel model = (DefaultTableModel)returnStockTable.getModel();
             model.setRowCount(0);
             
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
-                vector.add(resultSet.getString("w_product.id"));
+                vector.add(resultSet.getString("returning_stock.id"));
                 vector.add(resultSet.getString("w_product.name"));
                 vector.add(resultSet.getString("w_product.weight"));
-                vector.add(resultSet.getString("w_product.price"));
+                vector.add(resultSet.getString("returning_stock.qty"));
+                vector.add(resultSet.getString("w_grn_item.price"));
                 model.addRow(vector);
             }
         } catch (Exception e) {
@@ -66,7 +76,7 @@ public class SelectProduct extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        productsTable = new javax.swing.JTable();
+        returnStockTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Select Product");
@@ -83,7 +93,7 @@ public class SelectProduct extends javax.swing.JDialog {
 
         jLabel1.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(66, 45, 22));
-        jLabel1.setText("Select Product");
+        jLabel1.setText("Select Return Stock");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -104,29 +114,29 @@ public class SelectProduct extends javax.swing.JDialog {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        productsTable.setModel(new javax.swing.table.DefaultTableModel(
+        returnStockTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Product ID", "Product Name", "Product Weight", "Price"
+                "R. Stock ID", "Product Name", "Product Weight", "Quantity", "Buying Price"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        productsTable.getTableHeader().setReorderingAllowed(false);
-        productsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        returnStockTable.getTableHeader().setReorderingAllowed(false);
+        returnStockTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                productsTableMouseClicked(evt);
+                returnStockTableMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(productsTable);
+        jScrollPane1.setViewportView(returnStockTable);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -134,7 +144,7 @@ public class SelectProduct extends javax.swing.JDialog {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 798, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -164,20 +174,21 @@ public class SelectProduct extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void productsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_productsTableMouseClicked
+    private void returnStockTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_returnStockTableMouseClicked
         //logger.log(Level.INFO, "MouseEvent");
-        int row = productsTable.getSelectedRow();
+        int row = returnStockTable.getSelectedRow();
         
         if (evt.getClickCount() == 2) {
-            if (wGrn != null) {
-                wGrn.getProductIDField().setText(String.valueOf(productsTable.getValueAt(row, 0)));
-                wGrn.getProductNameLabel().setText(String.valueOf(productsTable.getValueAt(row, 1)));
-                wGrn.getProductWeightLabel().setText(String.valueOf(productsTable.getValueAt(row, 2)));
-                wGrn.getSellingPriceFormattedField().setText(String.valueOf(productsTable.getValueAt(row, 3)));
+            if (wReturns != null) {
+                wReturns.getreturningStockIDLabel().setText(String.valueOf(returnStockTable.getValueAt(row, 0)));
+                wReturns.getproductNameLabel().setText(String.valueOf(returnStockTable.getValueAt(row, 1)));
+                wReturns.getproductWeightLabel().setText(String.valueOf(returnStockTable.getValueAt(row, 2)));
+                wReturns.getquantityLabel().setText(String.valueOf(returnStockTable.getValueAt(row, 3)));
+                wReturns.getbuyingPriceLabel().setText(String.valueOf(returnStockTable.getValueAt(row, 4)));
                 this.dispose();
             }
         }
-    }//GEN-LAST:event_productsTableMouseClicked
+    }//GEN-LAST:event_returnStockTableMouseClicked
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         //logger.log(Level.INFO, "WindowEvent");
@@ -196,6 +207,6 @@ public class SelectProduct extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable productsTable;
+    private javax.swing.JTable returnStockTable;
     // End of variables declaration//GEN-END:variables
 }

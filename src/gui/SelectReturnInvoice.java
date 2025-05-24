@@ -44,6 +44,7 @@ public class SelectReturnInvoice extends javax.swing.JDialog {
                     + "ON `return_invoice`.`return_invoice_status_id` = `return_invoice_status`.`id` "
                     + "WHERE `return_invoice_status`.`name` = 'Pending' "
                     + "AND `return_invoice`.`id` LIKE '"+returnInvoiceID+"%'");
+            
             DefaultTableModel model = (DefaultTableModel) returnInvoiceTable.getModel();
             model.setRowCount(0);
             

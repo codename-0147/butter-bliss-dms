@@ -23,7 +23,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import model.GmailOAuthService;
+import model.ReturnStockItem;
 import model.SupplierReturnItem;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -39,6 +41,7 @@ public class WReturns extends javax.swing.JPanel {
     private WHome home;
     HashMap<String, String> suppliersMap = new HashMap<>();
     HashMap<String, String> supplierReturnReasonMap = new HashMap<>();
+    HashMap<String, ReturnStockItem> returnStockItemMap = new HashMap<>();
     HashMap<String, SupplierReturnItem> supplierReturnItemMap = new HashMap<>();
 
     /**
@@ -59,6 +62,8 @@ public class WReturns extends javax.swing.JPanel {
         loadSupplierReturnReasons();
     }
     
+    private double total = 0;
+    
     private void generateSupplierReturnInvoiceID() {
         long id = System.currentTimeMillis();
         supRetInvIDField.setText(String.valueOf(id));
@@ -77,7 +82,7 @@ public class WReturns extends javax.swing.JPanel {
     }
     
     public JLabel getoutletNameLabel() {
-        return outletNameLabel;
+        return outletNameLabel1;
     }
     
     public JLabel getoutletAddressLabel() {
@@ -100,8 +105,36 @@ public class WReturns extends javax.swing.JPanel {
         return returnInvoiceIDField2;
     }
     
+    public JLabel getoutletNameLabel2() {
+        return outletNameLabel2;
+    }
+    
     public JTable getreturnInvoiceItemTable2() {
         return returnInvoiceItemTable2;
+    }
+    
+    public JLabel getreturningStockIDLabel() {
+        return returningStockIDLabel;
+    }
+    
+    public JLabel getproductNameLabel() {
+        return productNameLabel;
+    }
+    
+    public JLabel getquantityLabel() {
+        return quantityLabel;
+    }
+    
+    public JLabel getproductWeightLabel() {
+        return productWeightLabel;
+    }
+    
+    public JLabel getbuyingPriceLabel() {
+        return buyingPriceLabel;
+    }
+    
+    public JLabel getsupplierEmailLabel() {
+        return supplierEmailLabel;
     }
     
     private void loadReturnInvoices() {
@@ -120,7 +153,7 @@ public class WReturns extends javax.swing.JPanel {
                 Vector<String> vector = new Vector<>();
                 vector.add(resultSet.getString("return_invoice.id"));
                 vector.add(resultSet.getString("outlet.name"));
-                vector.add(resultSet.getString("distributor.name"));
+                vector.add(resultSet.getString("distributor.id"));
                 vector.add(resultSet.getString("distributor.vehicle_no"));
                 vector.add(resultSet.getString("return_invoice.date"));
                 vector.add(resultSet.getString("reason.reason"));
@@ -136,15 +169,14 @@ public class WReturns extends javax.swing.JPanel {
         try {
             String query = "SELECT * FROM `return_slip` INNER JOIN `return_invoice` "
                     + "ON `return_slip`.`return_invoice_id` = `return_invoice`.`id` INNER JOIN `outlet` "
-                    + "ON `return_invoice`.`outlet_id` = `outlet`.`id` INNER JOIN `delivery` "
-                    + "ON `return_invoice`.`delivery_id` = `delivery`.`id` INNER JOIN `return_slip_status` "
+                    + "ON `return_invoice`.`outlet_id` = `outlet`.`id` INNER JOIN `return_slip_status` "
                     + "ON `return_slip`.`return_slip_status_id` = `return_slip_status`.`id` "
-                    + "WHERE `return_slip_status`.`name` = 'Approved'";
+                    + "WHERE `return_slip_status`.`name` = 'Approved' ";
             
-            if (sortByComboBox1.getSelectedItem().equals("Delivery Date DESC")) {
-                query += "ORDER BY `delivery`.`delivery_date` DESC";
-            }else if (sortByComboBox1.getSelectedItem().equals("Delivery Date ASC")) {
-                query += "ORDER BY `delivery`.`delivery_date` ASC";
+            if (sortByComboBox1.getSelectedItem().equals("Date DESC")) {
+                query += "ORDER BY `return_invoice`.`date` DESC";
+            }else if (sortByComboBox1.getSelectedItem().equals("Date ASC")) {
+                query += "ORDER BY `return_invoice`.`date` ASC";
             }else if (sortByComboBox1.getSelectedItem().equals("Outlet Name ASC")) {
                 query += "ORDER BY `outlet`.`name` ASC";
             }else if (sortByComboBox1.getSelectedItem().equals("Outlet Name DESC")) {
@@ -152,19 +184,15 @@ public class WReturns extends javax.swing.JPanel {
             }
             
             ResultSet resultSet = MySQL.executeSearch(query);
-            DefaultTableModel model = (DefaultTableModel) returnInvoiceTable.getModel();
+            DefaultTableModel model = (DefaultTableModel) returnSlipTable.getModel();
             model.setRowCount(0);
             
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
+                vector.add(resultSet.getString("return_slip.id"));
                 vector.add(resultSet.getString("return_invoice.id"));
                 vector.add(resultSet.getString("outlet.name"));
-                vector.add(resultSet.getString("distributor.name"));
-                vector.add(resultSet.getString("distributor.vehicle_no"));
-                vector.add(resultSet.getString("delivery.delivery_date"));
-                vector.add(resultSet.getString("return_invoice.time"));
-                vector.add(resultSet.getString("reason.reason"));
-                vector.add(resultSet.getString("outlet_manager.id"));
+                vector.add(resultSet.getString("return_invoice.date"));
                 model.addRow(vector);
             }
         } catch (Exception e) {
@@ -179,8 +207,8 @@ public class WReturns extends javax.swing.JPanel {
             vector.add("Select");
             
             while (resultSet.next()) {
-                vector.add(resultSet.getString("first_name") + " " + resultSet.getString("last_name"));
-                suppliersMap.put(resultSet.getString("email"), resultSet.getString("mobile"));
+                vector.add(resultSet.getString("fname") + " " + resultSet.getString("lname"));
+                suppliersMap.put(resultSet.getString("email"), resultSet.getString("id"));
             }
             
             DefaultComboBoxModel model = new DefaultComboBoxModel(vector);
@@ -206,6 +234,27 @@ public class WReturns extends javax.swing.JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    private void loadSupplierReturnItems() {
+        DefaultTableModel model = (DefaultTableModel) supplierReturnItemTable.getModel();
+        model.setRowCount(0);
+        total = 0;
+        
+        for (SupplierReturnItem supRetItem : supplierReturnItemMap.values()) {
+            Vector<String> vector = new Vector<>();
+            vector.add(supRetItem.getProductName());
+            vector.add(supRetItem.getProductWeight());
+            vector.add(supRetItem.getProductWeight());
+            vector.add(supRetItem.getQty());
+            vector.add(supRetItem.getBuyingPrice());
+            double itemTotal = Double.parseDouble(supRetItem.getQty()) * Double.parseDouble(supRetItem.getBuyingPrice());
+            total += itemTotal;
+            vector.add(String.valueOf(itemTotal));
+            model.addRow(vector);
+        }
+        
+        totalAmountLabel2.setText(String.valueOf(total));
     }
     
     private void loadSupplierReturnInvoices(){
@@ -299,24 +348,39 @@ public class WReturns extends javax.swing.JPanel {
         slipIDField.setText("");
         returnInvoiceIDField1.setText("");
         outletManagerIDField.setText("");
-        outletNameLabel.setText("OUTLET NAME");
+        outletNameLabel1.setText("OUTLET NAME");
         dateLabel.setText("DATE TIME");
         outletAddressLabel.setText("OUTLET ADDRESS");
         vehicleNumberLabel.setText("VEHICLE NUMBER");
         sortByComboBox1.setSelectedIndex(0);
     }
     
+    private void resetCollectReturnStock() {
+        returnInvoiceIDField2.setText("");
+        outletNameLabel2.setText("OUTLET NAME");
+        DefaultTableModel model = (DefaultTableModel) returnInvoiceItemTable2.getModel();
+        model.setRowCount(0);
+        returnStockItemMap.clear();
+    }
+    
     private void resetSupplierReturns() {
         generateSupplierReturnInvoiceID();
-        returnInvoiceIDField2.setText("");
+        returningStockIDLabel.setText("R. STOCK ID");
+        productNameLabel.setText("PROD. NAME");
+        productWeightLabel.setText("PROD. WEIGHT");
+        quantityLabel.setText("QUANTITY");
+        buyingPriceLabel.setText("PRICE");
+        totalAmountLabel2.setText("0.00");
+        supplierComboBox.setSelectedIndex(0);
         reasonComboBox.setSelectedIndex(0);
-        DefaultTableModel model = (DefaultTableModel) returnInvoiceItemTable2.getModel();
+        DefaultTableModel model = (DefaultTableModel) supplierReturnItemTable.getModel();
         model.setRowCount(0);
         fromDateChooser.setDate(null);
         toDateChooser.setDate(null);
         sortByComboBox2.setSelectedIndex(0);
         supRetInvoicesTable.clearSelection();
         loadSupplierReturnInvoices();
+        supplierReturnItemMap.clear();
     }
 
     /**
@@ -340,6 +404,8 @@ public class WReturns extends javax.swing.JPanel {
         viewInvoiceButton = new javax.swing.JButton();
         closeLabel1 = new javax.swing.JLabel();
         printInvoiceButton = new javax.swing.JButton();
+        totalAmountLabel1 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -349,7 +415,7 @@ public class WReturns extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         outletManagerIDField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        outletNameLabel = new javax.swing.JLabel();
+        outletNameLabel1 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         dateLabel = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -365,10 +431,21 @@ public class WReturns extends javax.swing.JPanel {
         returnSlipTable = new javax.swing.JTable();
         jLabel19 = new javax.swing.JLabel();
         sortByComboBox1 = new javax.swing.JComboBox<>();
-        viewSlipButton = new javax.swing.JButton();
-        uploadImageButton = new javax.swing.JButton();
+        printSlipButton = new javax.swing.JButton();
         closeLabel2 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        closeLabel3 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        returnInvoiceIDField2 = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        outletNameLabel2 = new javax.swing.JLabel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        returnInvoiceItemTable2 = new javax.swing.JTable();
+        selectRetInvButton = new javax.swing.JButton();
+        confirmNAddButton = new javax.swing.JButton();
+        resetButton3 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         closeLabel = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -377,12 +454,11 @@ public class WReturns extends javax.swing.JPanel {
         supRetInvIDField = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        returnInvoiceIDField2 = new javax.swing.JTextField();
-        selectRetInvButton = new javax.swing.JButton();
-        resetButton = new javax.swing.JButton();
+        selectRetStockButton = new javax.swing.JButton();
+        resetButton4 = new javax.swing.JButton();
         submitButton = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        returnInvoiceItemTable2 = new javax.swing.JTable();
+        supplierReturnItemTable = new javax.swing.JTable();
         jLabel20 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
         supRetInvoicesTable = new javax.swing.JTable();
@@ -399,9 +475,19 @@ public class WReturns extends javax.swing.JPanel {
         jLabel24 = new javax.swing.JLabel();
         supplierComboBox = new javax.swing.JComboBox<>();
         jLabel25 = new javax.swing.JLabel();
-        supplierEmailField = new javax.swing.JTextField();
-        jLabel26 = new javax.swing.JLabel();
-        returnInvoiceIDField3 = new javax.swing.JTextField();
+        returningStockIDLabel = new javax.swing.JLabel();
+        supplierEmailLabel = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
+        productNameLabel = new javax.swing.JLabel();
+        jLabel29 = new javax.swing.JLabel();
+        productWeightLabel = new javax.swing.JLabel();
+        jLabel31 = new javax.swing.JLabel();
+        quantityLabel = new javax.swing.JLabel();
+        jLabel33 = new javax.swing.JLabel();
+        buyingPriceLabel = new javax.swing.JLabel();
+        addButton = new javax.swing.JButton();
+        jLabel34 = new javax.swing.JLabel();
+        totalAmountLabel2 = new javax.swing.JLabel();
 
         jLabel2.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(66, 45, 22));
@@ -412,7 +498,7 @@ public class WReturns extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Outlet", "Distributor", "Vehicle No.", "Date", "Reason", "Out. Man. ID"
+                "ID", "Outlet ID", "Distributor ID", "Vehicle No.", "Date", "Reason", "Out. Man. ID"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -436,11 +522,11 @@ public class WReturns extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Product ID", "Product Name", "Weight", "Quantity", "Price"
+                "Product ID", "Product Name", "Product Weight", "Quantity", "Price", "Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -470,6 +556,11 @@ public class WReturns extends javax.swing.JPanel {
         viewInvoiceButton.setForeground(new java.awt.Color(0, 0, 0));
         viewInvoiceButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/view-icon.png"))); // NOI18N
         viewInvoiceButton.setText("View");
+        viewInvoiceButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewInvoiceButtonActionPerformed(evt);
+            }
+        });
 
         closeLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/close-icon.png"))); // NOI18N
         closeLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -483,6 +574,19 @@ public class WReturns extends javax.swing.JPanel {
         printInvoiceButton.setForeground(new java.awt.Color(0, 0, 0));
         printInvoiceButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/print-icon.png"))); // NOI18N
         printInvoiceButton.setText("Print");
+        printInvoiceButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printInvoiceButtonActionPerformed(evt);
+            }
+        });
+
+        totalAmountLabel1.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        totalAmountLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        totalAmountLabel1.setText("0.00");
+        totalAmountLabel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+
+        jLabel26.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel26.setText("Total Amount :");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -506,7 +610,12 @@ public class WReturns extends javax.swing.JPanel {
                                 .addComponent(printInvoiceButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(resetButton1)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel26)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(totalAmountLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -526,7 +635,11 @@ public class WReturns extends javax.swing.JPanel {
                 .addGap(24, 24, 24)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel26)
+                    .addComponent(totalAmountLabel1))
                 .addContainerGap())
         );
 
@@ -557,10 +670,10 @@ public class WReturns extends javax.swing.JPanel {
         jLabel8.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel8.setText("Outlet :");
 
-        outletNameLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        outletNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        outletNameLabel.setText("OUTLET NAME");
-        outletNameLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+        outletNameLabel1.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        outletNameLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        outletNameLabel1.setText("OUTLET NAME");
+        outletNameLabel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
 
         jLabel10.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel10.setText("Date :");
@@ -630,11 +743,11 @@ public class WReturns extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Slip ID", "Ret. Inv. ID", "Outlet Name", "Delivery Date", "Slip Image"
+                "Slip ID", "Ret. Inv. ID", "Outlet Name", "Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -648,24 +761,18 @@ public class WReturns extends javax.swing.JPanel {
         jLabel19.setText("Sort By :");
 
         sortByComboBox1.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-        sortByComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Delivery Date DESC", "Delivery Date ASC", "Outlet Name ASC", "Outlet Name DESC", "" }));
+        sortByComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Date DESC", "Date ASC", "Outlet Name ASC", "Outlet Name DESC", " " }));
         sortByComboBox1.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 sortByComboBox11ItemStateChanged(evt);
             }
         });
 
-        viewSlipButton.setBackground(new java.awt.Color(245, 219, 200));
-        viewSlipButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        viewSlipButton.setForeground(new java.awt.Color(0, 0, 0));
-        viewSlipButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/view-icon.png"))); // NOI18N
-        viewSlipButton.setText("View");
-
-        uploadImageButton.setBackground(new java.awt.Color(245, 219, 200));
-        uploadImageButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        uploadImageButton.setForeground(new java.awt.Color(0, 0, 0));
-        uploadImageButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/upload-icon.png"))); // NOI18N
-        uploadImageButton.setText("Upload Image");
+        printSlipButton.setBackground(new java.awt.Color(245, 219, 200));
+        printSlipButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        printSlipButton.setForeground(new java.awt.Color(0, 0, 0));
+        printSlipButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/print-icon.png"))); // NOI18N
+        printSlipButton.setText("Print");
 
         closeLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/close-icon.png"))); // NOI18N
         closeLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -696,10 +803,8 @@ public class WReturns extends javax.swing.JPanel {
                         .addComponent(jLabel19)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sortByComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 252, Short.MAX_VALUE)
-                        .addComponent(uploadImageButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(viewSlipButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(printSlipButton))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -717,7 +822,7 @@ public class WReturns extends javax.swing.JPanel {
                                     .addGroup(jPanel3Layout.createSequentialGroup()
                                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(slipIDField)
-                                            .addComponent(outletNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
+                                            .addComponent(outletNameLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
                                         .addGap(18, 18, 18)
                                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jLabel6)
@@ -739,7 +844,7 @@ public class WReturns extends javax.swing.JPanel {
                                     .addComponent(outletManagerIDField, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(wSupervisorIDField1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(vehicleNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 13, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -764,7 +869,7 @@ public class WReturns extends javax.swing.JPanel {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(slipIDField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(outletNameLabel))
+                        .addComponent(outletNameLabel1))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
@@ -787,17 +892,147 @@ public class WReturns extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel21)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel19)
                     .addComponent(sortByComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(viewSlipButton)
-                    .addComponent(uploadImageButton))
+                    .addComponent(printSlipButton))
                 .addContainerGap())
         );
 
         jTabbedPane1.addTab("Return Slips", jPanel3);
+
+        jLabel9.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(66, 45, 22));
+        jLabel9.setText("Collect Return Stock");
+
+        closeLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/close-icon.png"))); // NOI18N
+        closeLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                closeLabel3MouseClicked(evt);
+            }
+        });
+
+        jLabel11.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel11.setText("Ret. Inv. ID :");
+
+        returnInvoiceIDField2.setEditable(false);
+        returnInvoiceIDField2.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+
+        jLabel15.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel15.setText("Outlet :");
+
+        outletNameLabel2.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        outletNameLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        outletNameLabel2.setText("OUTLET NAME");
+        outletNameLabel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+
+        returnInvoiceItemTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Product Name", "Weight", "Qty", "Price", "Total"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        returnInvoiceItemTable2.getTableHeader().setReorderingAllowed(false);
+        jScrollPane6.setViewportView(returnInvoiceItemTable2);
+
+        selectRetInvButton.setBackground(new java.awt.Color(245, 219, 200));
+        selectRetInvButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        selectRetInvButton.setForeground(new java.awt.Color(0, 0, 0));
+        selectRetInvButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/select-icon.png"))); // NOI18N
+        selectRetInvButton.setText("Select Return Invoice");
+        selectRetInvButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectRetInvButtonActionPerformed(evt);
+            }
+        });
+
+        confirmNAddButton.setBackground(new java.awt.Color(245, 219, 200));
+        confirmNAddButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        confirmNAddButton.setForeground(new java.awt.Color(0, 0, 0));
+        confirmNAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/confirm-icon.png"))); // NOI18N
+        confirmNAddButton.setText("Confirm & Add");
+        confirmNAddButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmNAddButtonActionPerformed(evt);
+            }
+        });
+
+        resetButton3.setBackground(new java.awt.Color(245, 219, 200));
+        resetButton3.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        resetButton3.setForeground(new java.awt.Color(0, 0, 0));
+        resetButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/reset-icon.png"))); // NOI18N
+        resetButton3.setText("Reset");
+        resetButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetButton3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(closeLabel3))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(returnInvoiceIDField2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(outletNameLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                        .addGap(107, 107, 107)
+                        .addComponent(selectRetInvButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 758, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(resetButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(confirmNAddButton)))
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(closeLabel3)
+                    .addComponent(jLabel9))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(selectRetInvButton)
+                    .addComponent(outletNameLabel2)
+                    .addComponent(jLabel15)
+                    .addComponent(returnInvoiceIDField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(confirmNAddButton)
+                    .addComponent(resetButton3))
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Collect Return Stock", jPanel4);
 
         closeLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/close-icon.png"))); // NOI18N
         closeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -823,30 +1058,27 @@ public class WReturns extends javax.swing.JPanel {
         jLabel16.setText("Sup. Ret. Inv. ID :");
 
         jLabel18.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-        jLabel18.setText("Ret. Invoice ID :");
+        jLabel18.setText("R. Stock ID :");
 
-        returnInvoiceIDField2.setEditable(false);
-        returnInvoiceIDField2.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-
-        selectRetInvButton.setBackground(new java.awt.Color(245, 219, 200));
-        selectRetInvButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        selectRetInvButton.setForeground(new java.awt.Color(0, 0, 0));
-        selectRetInvButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/select-icon.png"))); // NOI18N
-        selectRetInvButton.setText("Select Return Invoice");
-        selectRetInvButton.addActionListener(new java.awt.event.ActionListener() {
+        selectRetStockButton.setBackground(new java.awt.Color(245, 219, 200));
+        selectRetStockButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        selectRetStockButton.setForeground(new java.awt.Color(0, 0, 0));
+        selectRetStockButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/select-icon.png"))); // NOI18N
+        selectRetStockButton.setText("Select Return Stock");
+        selectRetStockButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectRetInvButtonActionPerformed(evt);
+                selectRetStockButtonActionPerformed(evt);
             }
         });
 
-        resetButton.setBackground(new java.awt.Color(245, 219, 200));
-        resetButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        resetButton.setForeground(new java.awt.Color(0, 0, 0));
-        resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/reset-icon.png"))); // NOI18N
-        resetButton.setText("Reset");
-        resetButton.addActionListener(new java.awt.event.ActionListener() {
+        resetButton4.setBackground(new java.awt.Color(245, 219, 200));
+        resetButton4.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        resetButton4.setForeground(new java.awt.Color(0, 0, 0));
+        resetButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/reset-icon.png"))); // NOI18N
+        resetButton4.setText("Reset");
+        resetButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetButtonActionPerformed(evt);
+                resetButton4ActionPerformed(evt);
             }
         });
 
@@ -861,7 +1093,7 @@ public class WReturns extends javax.swing.JPanel {
             }
         });
 
-        returnInvoiceItemTable2.setModel(new javax.swing.table.DefaultTableModel(
+        supplierReturnItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -877,8 +1109,8 @@ public class WReturns extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        returnInvoiceItemTable2.getTableHeader().setReorderingAllowed(false);
-        jScrollPane4.setViewportView(returnInvoiceItemTable2);
+        supplierReturnItemTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane4.setViewportView(supplierReturnItemTable);
 
         jLabel20.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
         jLabel20.setForeground(new java.awt.Color(66, 45, 22));
@@ -948,19 +1180,75 @@ public class WReturns extends javax.swing.JPanel {
 
         supplierComboBox.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         supplierComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        supplierComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                supplierComboBoxItemStateChanged(evt);
+            }
+        });
 
         jLabel25.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-        jLabel25.setText("Sup. Email :");
+        jLabel25.setText("Supp. Email :");
 
-        supplierEmailField.setEditable(false);
-        supplierEmailField.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        returningStockIDLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        returningStockIDLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        returningStockIDLabel.setText("R. STOCK ID");
+        returningStockIDLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
 
-        jLabel26.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-        jLabel26.setText("Total Amount :");
+        supplierEmailLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        supplierEmailLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        supplierEmailLabel.setText("SUPPLIER EMAIL");
+        supplierEmailLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
 
-        returnInvoiceIDField3.setEditable(false);
-        returnInvoiceIDField3.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        returnInvoiceIDField3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+        jLabel28.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel28.setText("P. Name :");
+
+        productNameLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        productNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        productNameLabel.setText("PROD. NAME");
+        productNameLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+
+        jLabel29.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel29.setText("P. Weight :");
+
+        productWeightLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        productWeightLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        productWeightLabel.setText("PROD. WEIGHT");
+        productWeightLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+
+        jLabel31.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel31.setText("Quantity :");
+
+        quantityLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        quantityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        quantityLabel.setText("QUANTITY");
+        quantityLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+
+        jLabel33.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel33.setText("Price :");
+
+        buyingPriceLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        buyingPriceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        buyingPriceLabel.setText("PRICE");
+        buyingPriceLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
+
+        addButton.setBackground(new java.awt.Color(245, 219, 200));
+        addButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        addButton.setForeground(new java.awt.Color(0, 0, 0));
+        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/add-icon.png"))); // NOI18N
+        addButton.setText("Add");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel34.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        jLabel34.setText("Tot. Amount :");
+
+        totalAmountLabel2.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        totalAmountLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        totalAmountLabel2.setText("0.00");
+        totalAmountLabel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -973,28 +1261,8 @@ public class WReturns extends javax.swing.JPanel {
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(closeLabel))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel14)
-                            .addComponent(jLabel16))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(supRetInvIDField, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                            .addComponent(wSupervisorIDField2))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel18)
-                            .addComponent(jLabel22))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(returnInvoiceIDField2)
-                            .addComponent(reasonComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(selectRetInvButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(submitButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 758, Short.MAX_VALUE)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 758, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(updateButton)
                         .addGap(18, 18, 18)
@@ -1009,27 +1277,68 @@ public class WReturns extends javax.swing.JPanel {
                         .addComponent(jLabel37)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sortByComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                         .addComponent(findButton))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(55, 55, 55)
-                        .addComponent(jLabel24)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(supplierComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(46, 46, 46)
-                        .addComponent(jLabel25)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(supplierEmailField)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(resetButton))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel20)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel26)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel22)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(returnInvoiceIDField3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(reasonComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(30, 30, 30)
+                        .addComponent(jLabel34)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(totalAmountLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(resetButton4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(32, 32, 32)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel25)
+                                    .addComponent(jLabel24))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(supplierComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(23, 23, 23)
+                                        .addComponent(jLabel31)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(supplierEmailLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel14)
+                                    .addComponent(jLabel16))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(wSupervisorIDField2)
+                                    .addComponent(supRetInvIDField))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel28, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(quantityLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(returningStockIDLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(productNameLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE))))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel33)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(buyingPriceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel29)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(productWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(selectRetStockButton, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(addButton, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -1043,33 +1352,46 @@ public class WReturns extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
                     .addComponent(wSupervisorIDField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(selectRetStockButton)
                     .addComponent(jLabel18)
-                    .addComponent(returnInvoiceIDField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(selectRetInvButton))
+                    .addComponent(returningStockIDLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
                     .addComponent(supRetInvIDField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel22)
-                    .addComponent(reasonComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(submitButton))
+                    .addComponent(jLabel28)
+                    .addComponent(productNameLabel)
+                    .addComponent(jLabel29)
+                    .addComponent(productWeightLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel24)
                     .addComponent(supplierComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel25)
-                    .addComponent(supplierEmailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(resetButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel31)
+                    .addComponent(quantityLabel)
+                    .addComponent(jLabel33)
+                    .addComponent(buyingPriceLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel26)
-                    .addComponent(returnInvoiceIDField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel25)
+                    .addComponent(supplierEmailLabel)
+                    .addComponent(addButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel34)
+                        .addComponent(totalAmountLabel2))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(submitButton)
+                        .addComponent(resetButton4)
+                        .addComponent(jLabel22)
+                        .addComponent(reasonComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel20)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1110,7 +1432,7 @@ public class WReturns extends javax.swing.JPanel {
 
     private void returnInvoiceTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_returnInvoiceTableMouseClicked
         int row = returnInvoiceTable.getSelectedRow();
-        
+        double total = 0;
         try {
             ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `return_invoice_items` INNER JOIN `return_invoice` "
                     + "ON `return_invoice_items`.`return_invoice_id` = `return_invoice`.`id` INNER JOIN `stock` "
@@ -1129,8 +1451,13 @@ public class WReturns extends javax.swing.JPanel {
                 vector.add(resultSet.getString("product.weight"));
                 vector.add(resultSet.getString("return_invoice_items.qty"));
                 vector.add(resultSet.getString("grn_items.price"));
+                double itemTotal = Double.parseDouble(resultSet.getString("return_invoice_items.qty")) * Double.parseDouble(resultSet.getString("grn_items.price"));
+                total += itemTotal;
+                vector.add(String.valueOf(itemTotal));
                 model.addRow(vector);
             }
+            
+            totalAmountLabel1.setText(String.valueOf(total));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1154,7 +1481,7 @@ public class WReturns extends javax.swing.JPanel {
     }//GEN-LAST:event_sortByComboBox11ItemStateChanged
 
     private void closeLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeLabelMouseClicked
-        this.home.removeInventory();
+        this.home.removeReturns();
     }//GEN-LAST:event_closeLabelMouseClicked
 
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
@@ -1192,19 +1519,23 @@ public class WReturns extends javax.swing.JPanel {
         loadSupplierReturnInvoices();
     }//GEN-LAST:event_findButtonActionPerformed
 
-    private void selectRetInvButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectRetInvButtonActionPerformed
-        WSelectReturnInvoice selectReturnInvoice = new WSelectReturnInvoice((Frame) SwingUtilities.getWindowAncestor(this), true, this);
-        selectReturnInvoice.setVisible(true);
-    }//GEN-LAST:event_selectRetInvButtonActionPerformed
+    private void selectRetStockButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectRetStockButtonActionPerformed
+        if (supplierComboBox.getSelectedItem().equals("Select")) {
+            JOptionPane.showMessageDialog(this, "Please select a supplier", "Warning", JOptionPane.WARNING_MESSAGE);
+        }else {
+            WSelectReturnStock selectReturnStock = new WSelectReturnStock((Frame) SwingUtilities.getWindowAncestor(this), true, this);
+            selectReturnStock.setVisible(true);
+        }
+    }//GEN-LAST:event_selectRetStockButtonActionPerformed
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
         try {
-            int rowCount = returnInvoiceItemTable2.getRowCount();
+            int rowCount = supplierReturnItemTable.getRowCount();
             
             if (reasonComboBox.getSelectedItem().equals("Select")) {
                 JOptionPane.showMessageDialog(this, "Please select a return reason", "Warning", JOptionPane.WARNING_MESSAGE);
             }else if (rowCount == 0) {
-                JOptionPane.showMessageDialog(this, "Please select a return invoice", "Warning", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please select a return stock", "Warning", JOptionPane.WARNING_MESSAGE);
             }else {
                 ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `supplier_return_invoice` "
                     + "WHERE `id` = '"+supRetInvIDField.getText()+"'");
@@ -1216,7 +1547,7 @@ public class WReturns extends javax.swing.JPanel {
                     String warehouseSupervisorID = wSupervisorIDField2.getText();
                     String supplierReturnInvoiceID = supRetInvIDField.getText();
                     String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                    String supplierEmail = supplierEmailField.getText();
+                    String supplierEmail = supplierEmailLabel.getText();
                     String reason = String.valueOf(reasonComboBox.getSelectedItem());
                     
                     MySQL.executeIUD("INSERT INTO `supplier_return_invoice` "
@@ -1224,21 +1555,19 @@ public class WReturns extends javax.swing.JPanel {
                                     + "'"+supplierReturnReasonMap.get(reason)+"', 1, '"+warehouseSupervisorID+"')");
                     
                     for (SupplierReturnItem supReturnItem : supplierReturnItemMap.values()) {
-                        MySQL.executeIUD("INSERT INTO `supplier_return_invoice_item`(`qty`, `supplier_return_invoice_id`, "
-                                + "`w_stock_id`) VALUES('"+supReturnItem.getQty()+"', '"+supplierReturnInvoiceID+"', "
-                                        + "'"+supReturnItem.getStockID()+"')");
-                        
-                        MySQL.executeIUD("INSERT INTO `returning_stock`(`w_stock_id`, `qty`, `returning_stock_status_id`) "
-                                + "VALUES('"+supReturnItem.getStockID()+"', '"+supReturnItem.getQty()+"', 1)");
+                        MySQL.executeIUD("INSERT INTO `supplier_return_invoice_item`(`supplier_return_invoice_id`, "
+                                + "`w_stock_id`) VALUES('"+supplierReturnInvoiceID+"', '"+supReturnItem.getStockID()+"')");
                     }
                     
-                    InputStream path = this.getClass().getResourceAsStream("/reports/gh_return_invoice.jasper");
+                    InputStream path = this.getClass().getResourceAsStream("/reports/bb_supplier_return_invoice.jasper");
                     HashMap<String, Object> parameters = new HashMap<>();
-                    parameters.put("Parameter1", wSupervisorIDField2.getText());
-                    parameters.put("Parameter2", supRetInvIDField.getText());
-                    parameters.put("Parameter3", supplierComboBox.getSelectedItem());
-                    parameters.put("Parameter4", dateTime);
-                    parameters.put("Parameter5", reasonComboBox.getSelectedItem());
+                    parameters.put("Parameter1", supRetInvIDField.getText());
+                    parameters.put("Parameter2", wSupervisorIDField2.getText());
+                    parameters.put("Parameter3", String.valueOf(supplierComboBox.getSelectedItem()));
+                    parameters.put("Parameter4", supplierEmailLabel.getText());
+                    parameters.put("Parameter5", totalAmountLabel2.getText());
+                    parameters.put("Parameter6", dateTime);
+                    parameters.put("Parameter7", String.valueOf(reasonComboBox.getSelectedItem()));
                     
                     String appDir = new File("").getAbsolutePath(); // Get the application's directory
                     String reportsFolder = appDir + File.separator + "ExportedReports"; // Main folder path
@@ -1256,7 +1585,7 @@ public class WReturns extends javax.swing.JPanel {
                     // Path to export the PDF file (inside "Supplier Return Invoice Reports" subfolder)
                     String outputPath = retInvoiceReportsFolder + File.separator + "Supplier_Return_invoice_report_" + supplierReturnInvoiceID + ".pdf";
 
-                    JRTableModelDataSource dataSource = new JRTableModelDataSource(returnInvoiceItemTable2.getModel());
+                    JRTableModelDataSource dataSource = new JRTableModelDataSource(supplierReturnItemTable.getModel());
                     JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
                     JasperViewer.viewReport(report, false);
                     JasperPrintManager.printReport(report, false);
@@ -1264,8 +1593,8 @@ public class WReturns extends javax.swing.JPanel {
                     resetSupplierReturns();
                     
                     GmailOAuthService service = new GmailOAuthService();
-                    //String recipient = supplierEmailLabel.getText();
-                    String recipient = "gamergangster866@gmail.com";
+                    String recipient = supplierEmailLabel.getText();
+                    //String recipient = "gamergangster866@gmail.com";
                     String subject = "Report Attached";
                     String bodyText = "Please find the attached PDF report.";
                     String pdfFileName = "Supplier_Return_invoice_report_" + supplierReturnInvoiceID + ".pdf";
@@ -1280,9 +1609,9 @@ public class WReturns extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_submitButtonActionPerformed
 
-    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+    private void resetButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButton4ActionPerformed
         resetSupplierReturns();
-    }//GEN-LAST:event_resetButtonActionPerformed
+    }//GEN-LAST:event_resetButton4ActionPerformed
 
     private void approveNPrintButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveNPrintButtonActionPerformed
         try {
@@ -1297,13 +1626,16 @@ public class WReturns extends javax.swing.JPanel {
                 MySQL.executeIUD("UPDATE `return_slip` SET `w_supervisor_id` = '"+wSupervisorIDField1.getText()+"', "
                         + "`return_slip_status_id` = 2 WHERE `id` = '"+returnSlipID+"'");
                 
-                InputStream path = this.getClass().getResourceAsStream("/reports/gh_return_invoice.jasper");
+                InputStream path = this.getClass().getResourceAsStream("/reports/bb_return_slip.jasper");
                 HashMap<String, Object> parameters = new HashMap<>();
-                //parameters.put("Parameter1", wSupervisorIDField2.getText());
-                //parameters.put("Parameter2", supRetInvIDField.getText());
-                //parameters.put("Parameter3", supplierComboBox.getSelectedItem());
-                //parameters.put("Parameter4", dateTime);
-                //parameters.put("Parameter5", reasonComboBox.getSelectedItem());
+                parameters.put("Parameter1", slipIDField.getText());
+                parameters.put("Parameter2", returnInvoiceIDField1.getText());
+                parameters.put("Parameter3", outletNameLabel1.getText());
+                parameters.put("Parameter4", outletAddressLabel.getText());
+                parameters.put("Parameter5", dateLabel.getText());
+                parameters.put("Parameter6", outletManagerIDField.getText());
+                parameters.put("Parameter7", wSupervisorIDField1.getText());
+                parameters.put("Parameter8", vehicleNumberLabel.getText());
 
                 String appDir = new File("").getAbsolutePath(); // Get the application's directory
                 String reportsFolder = appDir + File.separator + "ExportedReports"; // Main folder path
@@ -1321,11 +1653,11 @@ public class WReturns extends javax.swing.JPanel {
                 // Path to export the PDF file (inside "Approved Return Slip Reports" subfolder)
                 String outputPath = retInvoiceReportsFolder + File.separator + "Approved_Return_Slip_report_" + returnSlipID + ".pdf";
 
-                //JRTableModelDataSource dataSource = new JRTableModelDataSource(returnInvoiceItemTable.getModel());
-                //JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
-                //JasperViewer.viewReport(report, false);
-                //JasperPrintManager.printReport(report, false);
-                //JasperExportManager.exportReportToPdfFile(report, outputPath);
+                JREmptyDataSource dataSource = new JREmptyDataSource();
+                JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
+                JasperViewer.viewReport(report, false);
+                JasperPrintManager.printReport(report, false);
+                JasperExportManager.exportReportToPdfFile(report, outputPath);
                 resetReturnSlip();
             }
         } catch (Exception e) {
@@ -1333,20 +1665,166 @@ public class WReturns extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_approveNPrintButtonActionPerformed
 
+    private void closeLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeLabel3MouseClicked
+        this.home.removeReturns();
+    }//GEN-LAST:event_closeLabel3MouseClicked
+
+    private void selectRetInvButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectRetInvButtonActionPerformed
+        WSelectReturnInvoice selectReturnInvoice = new WSelectReturnInvoice((Frame) SwingUtilities.getWindowAncestor(this), true, this);
+        selectReturnInvoice.setVisible(true);
+    }//GEN-LAST:event_selectRetInvButtonActionPerformed
+
+    private void confirmNAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmNAddButtonActionPerformed
+        try {
+            if (returnInvoiceIDField2.getText().equals("")) {
+                JOptionPane.showMessageDialog(this, "Please select a return invoice", "Warning", JOptionPane.WARNING_MESSAGE);
+            }else {
+                for (ReturnStockItem returnStockItem : returnStockItemMap.values()) {
+                    MySQL.executeIUD("INSERT INTO `returning_stock`(`w_stock_id`, `qty`, `returning_stock_status_id`) "
+                            + "VALUES('"+returnStockItem.getStockID()+"', '"+returnStockItem.getQty()+"', 1)");
+                }
+                
+                MySQL.executeIUD("UPDATE `return_invoice` SET `collect_return_stock_status_id` = 2 "
+                        + "WHERE `return_invoice`.`id` = '"+returnInvoiceIDField2.getText()+"'");
+                resetCollectReturnStock();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_confirmNAddButtonActionPerformed
+
+    private void resetButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButton3ActionPerformed
+        resetCollectReturnStock();
+    }//GEN-LAST:event_resetButton3ActionPerformed
+
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        try {
+            String stockID = returningStockIDLabel.getText();
+            String productName = productNameLabel.getText();
+            String productWeight = productWeightLabel.getText();
+            String buyingPrice = buyingPriceLabel.getText();
+            String qty = quantityLabel.getText();
+            
+            if (stockID.equals("R. STOCK ID")) {
+                JOptionPane.showMessageDialog(this, "Please select a returning stock", 
+                        "Warning", JOptionPane.WARNING_MESSAGE);
+            }else if (supplierReturnItemMap.get(stockID) != null) {
+                JOptionPane.showMessageDialog(this, "This return stock is already added", 
+                        "Warning", JOptionPane.WARNING_MESSAGE);
+            }else {
+                SupplierReturnItem supReturnItem = new SupplierReturnItem();
+                supReturnItem.setStockID(stockID);
+                supReturnItem.setProductName(productName);
+                supReturnItem.setProductWeight(productWeight);
+                supReturnItem.setBuyingPrice(buyingPrice);
+                supReturnItem.setQty(qty);
+                supplierReturnItemMap.put(stockID, supReturnItem);
+                loadSupplierReturnItems();
+                
+                returningStockIDLabel.setText("R. STOCK ID");
+                productNameLabel.setText("PROD. NAME");
+                productWeightLabel.setText("PROD. WEIGHT");
+                quantityLabel.setText("QUANTITY");
+                buyingPriceLabel.setText("PRICE");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_addButtonActionPerformed
+
+    private void supplierComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_supplierComboBoxItemStateChanged
+        try {
+            if (supplierComboBox.getSelectedItem().equals("Select")) {
+                supplierEmailLabel.setText("SUPPLIER EMAIL");
+            }else {
+                ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `supplier` "
+                    + "WHERE `fname`+`lname` = '"+supplierComboBox.getSelectedItem()+"'");
+            
+                if (resultSet.next()) {
+                    supplierEmailLabel.setText(resultSet.getString("email"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_supplierComboBoxItemStateChanged
+
+    private void viewInvoiceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewInvoiceButtonActionPerformed
+        try {
+            int row = returnInvoiceTable.getSelectedRow();
+        
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a return invoice", "Warning", JOptionPane.WARNING_MESSAGE);
+            }else {
+                InputStream path = this.getClass().getResourceAsStream("/reports/bb_return_invoice.jasper");
+                HashMap<String, Object> parameters = new HashMap<>();
+                parameters.put("Parameter1", String.valueOf(returnInvoiceTable.getValueAt(row, 0)));
+                parameters.put("Parameter2", String.valueOf(returnInvoiceTable.getValueAt(row, 1)));
+                parameters.put("Parameter3", String.valueOf(returnInvoiceTable.getValueAt(row, 2)));
+                parameters.put("Parameter4", String.valueOf(returnInvoiceTable.getValueAt(row, 3)));
+                parameters.put("Parameter5", String.valueOf(returnInvoiceTable.getValueAt(row, 4)));
+                parameters.put("Parameter6", String.valueOf(returnInvoiceTable.getValueAt(row, 5)));
+                parameters.put("Parameter7", String.valueOf(returnInvoiceTable.getValueAt(row, 6)));
+                parameters.put("Parameter8", totalAmountLabel1.getText());
+
+                JRTableModelDataSource dataSource = new JRTableModelDataSource(returnInvoiceItemTable1.getModel());
+                JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
+                JasperViewer.viewReport(report, false);
+                resetReturnInvoices();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_viewInvoiceButtonActionPerformed
+
+    private void printInvoiceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printInvoiceButtonActionPerformed
+        try {
+            int row = returnInvoiceTable.getSelectedRow();
+        
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a return invoice", "Warning", JOptionPane.WARNING_MESSAGE);
+            }else {
+                InputStream path = this.getClass().getResourceAsStream("/reports/bb_return_invoice.jasper");
+                HashMap<String, Object> parameters = new HashMap<>();
+                parameters.put("Parameter1", String.valueOf(returnInvoiceTable.getValueAt(row, 0)));
+                parameters.put("Parameter2", String.valueOf(returnInvoiceTable.getValueAt(row, 1)));
+                parameters.put("Parameter3", String.valueOf(returnInvoiceTable.getValueAt(row, 2)));
+                parameters.put("Parameter4", String.valueOf(returnInvoiceTable.getValueAt(row, 3)));
+                parameters.put("Parameter5", String.valueOf(returnInvoiceTable.getValueAt(row, 4)));
+                parameters.put("Parameter6", String.valueOf(returnInvoiceTable.getValueAt(row, 5)));
+                parameters.put("Parameter7", String.valueOf(returnInvoiceTable.getValueAt(row, 6)));
+                parameters.put("Parameter8", totalAmountLabel1.getText());
+
+                JRTableModelDataSource dataSource = new JRTableModelDataSource(returnInvoiceItemTable1.getModel());
+                JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
+                JasperPrintManager.printReport(report, false);
+                resetReturnInvoices();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_printInvoiceButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addButton;
     private javax.swing.JButton approveNPrintButton;
+    private javax.swing.JLabel buyingPriceLabel;
     private javax.swing.JLabel closeLabel;
     private javax.swing.JLabel closeLabel1;
     private javax.swing.JLabel closeLabel2;
+    private javax.swing.JLabel closeLabel3;
+    private javax.swing.JButton confirmNAddButton;
     private javax.swing.JLabel dateLabel;
     private javax.swing.JButton findButton;
     private com.toedter.calendar.JDateChooser fromDateChooser;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -1360,39 +1838,54 @@ public class WReturns extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel outletAddressLabel;
     private javax.swing.JTextField outletManagerIDField;
-    private javax.swing.JLabel outletNameLabel;
+    private javax.swing.JLabel outletNameLabel1;
+    private javax.swing.JLabel outletNameLabel2;
     private javax.swing.JButton printInvoiceButton;
+    private javax.swing.JButton printSlipButton;
+    private javax.swing.JLabel productNameLabel;
+    private javax.swing.JLabel productWeightLabel;
+    private javax.swing.JLabel quantityLabel;
     private javax.swing.JComboBox<String> reasonComboBox;
-    private javax.swing.JButton resetButton;
     private javax.swing.JButton resetButton1;
     private javax.swing.JButton resetButton2;
+    private javax.swing.JButton resetButton3;
+    private javax.swing.JButton resetButton4;
     private javax.swing.JTextField returnInvoiceIDField1;
     private javax.swing.JTextField returnInvoiceIDField2;
-    private javax.swing.JTextField returnInvoiceIDField3;
     private javax.swing.JTable returnInvoiceItemTable1;
     private javax.swing.JTable returnInvoiceItemTable2;
     private javax.swing.JTable returnInvoiceTable;
     private javax.swing.JTable returnSlipTable;
+    private javax.swing.JLabel returningStockIDLabel;
     private javax.swing.JButton selectInvoiceButton;
     private javax.swing.JButton selectRetInvButton;
+    private javax.swing.JButton selectRetStockButton;
     private javax.swing.JTextField slipIDField;
     private javax.swing.JComboBox<String> sortByComboBox1;
     private javax.swing.JComboBox<String> sortByComboBox2;
@@ -1400,13 +1893,14 @@ public class WReturns extends javax.swing.JPanel {
     private javax.swing.JTextField supRetInvIDField;
     private javax.swing.JTable supRetInvoicesTable;
     private javax.swing.JComboBox<String> supplierComboBox;
-    private javax.swing.JTextField supplierEmailField;
+    private javax.swing.JLabel supplierEmailLabel;
+    private javax.swing.JTable supplierReturnItemTable;
     private com.toedter.calendar.JDateChooser toDateChooser;
+    private javax.swing.JLabel totalAmountLabel1;
+    private javax.swing.JLabel totalAmountLabel2;
     private javax.swing.JButton updateButton;
-    private javax.swing.JButton uploadImageButton;
     private javax.swing.JLabel vehicleNumberLabel;
     private javax.swing.JButton viewInvoiceButton;
-    private javax.swing.JButton viewSlipButton;
     private javax.swing.JTextField wSupervisorIDField1;
     private javax.swing.JTextField wSupervisorIDField2;
     // End of variables declaration//GEN-END:variables

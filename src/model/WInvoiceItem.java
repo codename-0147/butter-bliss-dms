@@ -9,8 +9,10 @@ package model;
  * @author barth
  */
 public class WInvoiceItem {
+    private String stockID;
     private String productID;
     private String productName;
+    private String productWeight;
     private String qty;
     private String price;
     private String mfd;
@@ -98,5 +100,33 @@ public class WInvoiceItem {
      */
     public void setExp(String exp) {
         this.exp = exp;
+    }
+
+    /**
+     * @return the stockID
+     */
+    public String getStockID() {
+        return stockID;
+    }
+
+    /**
+     * @param stockID the stockID to set
+     */
+    public void setStockID(String stockID) {
+        this.stockID = stockID;
+    }
+
+    /**
+     * @return the productWeight
+     */
+    public String getProductWeight() {
+        return productWeight;
+    }
+
+    /**
+     * @param productWeight the productWeight to set
+     */
+    public void setProductWeight(String productWeight) {
+        this.productWeight = productWeight;
     }
 }

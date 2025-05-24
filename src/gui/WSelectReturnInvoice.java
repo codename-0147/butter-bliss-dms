@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import model.ReturnStockItem;
 import model.SupplierReturnItem;
 
 /**
@@ -34,16 +35,22 @@ public class WSelectReturnInvoice extends javax.swing.JDialog {
         loadReturnInvoices(returnInvoiceIDField.getText());
     }
     
+    private double total = 0;
+    
     private void loadReturnInvoices(String returnInvoiceID) {
         try {
             ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `return_invoice` INNER JOIN `outlet` "
-                    + "ON `return_invoice`.`outlet_id` = `outlet`.`id` INNER JOIN `distributor` "
-                    + "ON `return_invoice`.`distributor_id` = `distributor`.`id` INNER JOIN `delivery` "
-                    + "ON `return_invoice`.`delivery_id` = `delivery`.`id` INNER JOIN `reason` "
+                    + "ON `return_invoice`.`outlet_id` = `outlet`.`id` INNER JOIN `outlet_manager` "
+                    + "ON `outlet`.`outlet_manager_id` = `outlet_manager`.`id` INNER JOIN `distributor` "
+                    + "ON `return_invoice`.`distributor_id` = `distributor`.`id` INNER JOIN `reason` "
                     + "ON `return_invoice`.`reason_id` = `reason`.`id` INNER JOIN `return_invoice_status` "
                     + "ON `return_invoice`.`return_invoice_status_id` = `return_invoice_status`.`id` "
+                    + "INNER JOIN `collect_return_stock_status` "
+                    + "ON `return_invoice`.`collect_return_stock_status_id` = `collect_return_stock_status`.`id` "
                     + "WHERE `return_invoice_status`.`name` = 'Approved' "
+                    + "AND `collect_return_stock_status`.`name` = 'Pending'"
                     + "AND `return_invoice`.`id` LIKE '"+returnInvoiceID+"%'");
+            
             DefaultTableModel model = (DefaultTableModel) returnInvoiceTable.getModel();
             model.setRowCount(0);
             
@@ -53,8 +60,7 @@ public class WSelectReturnInvoice extends javax.swing.JDialog {
                 vector.add(resultSet.getString("outlet.name"));
                 vector.add(resultSet.getString("distributor.name"));
                 vector.add(resultSet.getString("distributor.vehicle_no"));
-                vector.add(resultSet.getString("delivery.delivery_date"));
-                vector.add(resultSet.getString("return_invoice.time"));
+                vector.add(resultSet.getString("return_invoice.date"));
                 vector.add(resultSet.getString("reason.reason"));
                 vector.add(resultSet.getString("outlet_manager.id"));
                 model.addRow(vector);
@@ -122,11 +128,11 @@ public class WSelectReturnInvoice extends javax.swing.JDialog {
 
             },
             new String [] {
-                "ID", "Outlet", "Distributor", "Vehicle No.", "Delivery Date", "Time", "Reason", "Out. Man. ID"
+                "ID", "Outlet", "Distributor", "Vehicle No.", "Date", "Reason", "Out. Man. ID"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -204,52 +210,60 @@ public class WSelectReturnInvoice extends javax.swing.JDialog {
         if (evt.getClickCount() == 2) {
             try {
                 if (wReturns != null) {
-                    wReturns.getreturnInvoiceIDField2().setText(String.valueOf(returnInvoiceTable.getValueAt(row, 1)));
+                    wReturns.getreturnInvoiceIDField2().setText(String.valueOf(returnInvoiceTable.getValueAt(row, 0)));
+                    wReturns.getoutletNameLabel2().setText(String.valueOf(returnInvoiceTable.getValueAt(row, 1)));
 
-                    ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `return_invoice` INNER JOIN `return_invoice_items` "
+                    ResultSet resultSet = MySQL.executeSearch("SELECT `w_stock`.`id`, `w_product`.`name`, "
+                            + "`w_product`.`weight`, `return_invoice_items`.`qty`, `w_grn_item`.`price` "
+                            + "FROM `return_invoice` INNER JOIN `return_invoice_items` "
                             + "ON `return_invoice`.`id` = `return_invoice_items`.`return_invoice_id` INNER JOIN `stock` "
                             + "ON `return_invoice_items`.`stock_id` = `stock`.`id` INNER JOIN `product` "
                             + "ON `stock`.`product_id` = `product`.`id` INNER JOIN `grn_items` "
-                            + "ON `stock`.`id` = `grn_items`.`stock_id` "
-                            + "WHERE `return_invoice`.`id` = '"+String.valueOf(returnInvoiceTable.getValueAt(row, 1))+"'");
+                            + "ON `stock`.`id` = `grn_items`.`stock_id` INNER JOIN `w_product` "
+                            + "ON `product`.`id` = `w_product`.`id` INNER JOIN `w_stock` "
+                            + "ON `w_product`.`id` = `w_stock`.`w_product_id` INNER JOIN `w_grn_item` "
+                            + "ON `w_stock`.`id` = `w_grn_item`.`w_stock_id` "
+                            + "WHERE `return_invoice`.`id` = '"+String.valueOf(returnInvoiceTable.getValueAt(row, 0))+"' "
+                            + "AND `w_stock`.`price` = `grn_items`.`price` AND `w_stock`.`mfd` = `stock`.`mfd` "
+                            + "AND `w_stock`.`exp` = `stock`.`exp` AND `w_product`.`id` = `product`.`id`");
                     
-                    ResultSet resultSet1 = MySQL.executeSearch("SELECT * FROM `w_stock` INNER JOIN `w_grn_items` "
-                            + "ON `w_stock`.`id` = `w_grn_items`.`w_stock_id` "
-                            + "WHERE `w_stock`.`price` = '"+resultSet.getString("grn_items.price")+"' "
-                            + "AND `w_stock`.`mfd` = '"+resultSet.getString("stock.mfd")+"' "
-                            + "AND `w_stock`.`exp` = '"+resultSet.getString("stock.exp")+"'");
-                    
-                    String stockID = String.valueOf(resultSet1.getString("w_stock.id"));
-                    String productName = String.valueOf(resultSet.getString("product.name"));
-                    String productWeight = String.valueOf(resultSet.getString("product.weight"));
-                    String returnQty = String.valueOf(resultSet.getString("return_invoice_items.qty"));
-                    String buyingPrice = String.valueOf(resultSet1.getString("w_grn_items.price"));
-                    
+                    String stockID;
+                    String productName;
+                    String productWeight;
+                    String returnQty;
+                    String buyingPrice;
                     
                     DefaultTableModel model = (DefaultTableModel) wReturns.getreturnInvoiceItemTable2().getModel();
                     model.setRowCount(0);
+                    total = 0;
                     
-                    while (resultSet.next() && resultSet1.next()) {
+                    while (resultSet.next()) {
+                        stockID = String.valueOf(resultSet.getString("w_stock.id"));
+                        productName = String.valueOf(resultSet.getString("w_product.name"));
+                        productWeight = String.valueOf(resultSet.getString("w_product.weight"));
+                        returnQty = String.valueOf(resultSet.getString("return_invoice_items.qty"));
+                        buyingPrice = String.valueOf(resultSet.getString("w_grn_item.price"));
+                        
                         Vector<String> vector = new Vector<>();
-                        //vector.add(resultSet.getString("product.id"));
-                        vector.add(resultSet.getString("product.name"));
-                        vector.add(resultSet.getString("product.weight"));
+                        vector.add(resultSet.getString("w_product.name"));
+                        vector.add(resultSet.getString("w_product.weight"));
                         vector.add(resultSet.getString("return_invoice_items.qty"));
-                        vector.add(resultSet1.getString("w_grn_items.price"));
-                        //vector.add(resultSet.getString("stock.mfd"));
-                        //vector.add(resultSet.getString("stock.exp"));
+                        vector.add(resultSet.getString("w_grn_item.price"));
+                        double itemTotal = Double.parseDouble(returnQty) * Double.parseDouble(buyingPrice);
+                        total += itemTotal;
+                        vector.add(String.valueOf(itemTotal));
                         model.addRow(vector);
-                    }
-                    
-                    SupplierReturnItem supplierReturnItem = new SupplierReturnItem();
-                    supplierReturnItem.setStockID(stockID);
-                    supplierReturnItem.setProductName(productName);
-                    supplierReturnItem.setProductWeight(productWeight);
-                    supplierReturnItem.setBuyingPrice(buyingPrice);
-                    supplierReturnItem.setQty(returnQty);
-                    
-                    if (wReturns.supplierReturnItemMap.get(stockID) == null) {
-                        wReturns.supplierReturnItemMap.put(stockID, supplierReturnItem);
+                        
+                        ReturnStockItem returnStockItem = new ReturnStockItem();
+                        returnStockItem.setStockID(stockID);
+                        returnStockItem.setProductName(productName);
+                        returnStockItem.setProductWeight(productWeight);
+                        returnStockItem.setBuyingPrice(buyingPrice);
+                        returnStockItem.setQty(returnQty);
+                        
+                        if (wReturns.returnStockItemMap.get(stockID) == null) {
+                            wReturns.returnStockItemMap.put(stockID, returnStockItem);
+                        }
                     }
 
                     this.dispose();

@@ -38,17 +38,17 @@ public class WProducts extends javax.swing.JPanel {
     
     private void loadProducts() {
         try {
-            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `product` INNER JOIN `category` "
-                    + "ON `product`.`category_id` = `category`.`id`");
+            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `w_product` INNER JOIN `category` "
+                    + "ON `w_product`.`category_id` = `category`.`id`");
             DefaultTableModel model = (DefaultTableModel)productsTable.getModel();
             model.setRowCount(0);
             
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
-                vector.add(resultSet.getString("product.id"));
-                vector.add(resultSet.getString("product.name"));
-                vector.add(resultSet.getString("product.price"));
-                vector.add(resultSet.getString("product.weight"));
+                vector.add(resultSet.getString("w_product.id"));
+                vector.add(resultSet.getString("w_product.name"));
+                vector.add(resultSet.getString("w_product.price"));
+                vector.add(resultSet.getString("w_product.weight"));
                 vector.add(resultSet.getString("category.name"));
                 model.addRow(vector);
             }
@@ -59,13 +59,12 @@ public class WProducts extends javax.swing.JPanel {
     
     public void loadStock() {
         try {
-            String query = "SELECT * FROM `w_stock` INNER JOIN `product` ON `w_stock`.`product_id` = `product`.`id` "
-                    + "INNER JOIN `brand` ON `product`.`brand_id` = `brand`.`id` ";
+            String query = "SELECT * FROM `w_stock` INNER JOIN `w_product` ON `w_stock`.`w_product_id` = `w_product`.`id` ";
             int row = productsTable.getSelectedRow();
             
             if (row != -1) {
                 String productID = String.valueOf(productsTable.getValueAt(row, 0));
-                query += "WHERE `w_stock`.`product_id` = '"+productID+"' ";
+                query += "WHERE `w_stock`.`w_product_id` = '"+productID+"' ";
             }
             
             if (query.contains("WHERE")) {
@@ -117,17 +116,13 @@ public class WProducts extends javax.swing.JPanel {
             }else if (sort.equals("Stock ID DESC")) {
                 query += "`w_stock`.`id` DESC";
             }else if (sort.equals("Product ID ASC")) {
-                query += "`product`.`id` ASC";
+                query += "`w_product`.`id` ASC";
             }else if (sort.equals("Product ID DESC")) {
-                query += "`product`.`id` DESC";
-            }else if (sort.equals("Brand ASC")) {
-                query += "`brand`.`name` ASC";
-            }else if (sort.equals("Brand DESC")) {
-                query += "`brand`.`name` DESC";
+                query += "`w_product`.`id` DESC";
             }else if (sort.equals("Name ASC")) {
-                query += "`product`.`name` ASC";
+                query += "`w_product`.`name` ASC";
             }else if (sort.equals("Name DESC")) {
-                query += "`product`.`name` DESC";
+                query += "`w_product`.`name` DESC";
             }else if (sort.equals("Selling Price ASC")) {
                 query += "`w_stock`.`price` ASC";
             }else if (sort.equals("Selling Price DESC")) {
@@ -145,9 +140,6 @@ public class WProducts extends javax.swing.JPanel {
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
                 vector.add(resultSet.getString("w_stock.id"));
-                vector.add(resultSet.getString("product.id"));
-                vector.add(resultSet.getString("brand.name"));
-                vector.add(resultSet.getString("product.name"));
                 vector.add(resultSet.getString("w_stock.price"));
                 vector.add(resultSet.getString("qty"));
                 vector.add(resultSet.getString("mfd"));
@@ -380,11 +372,11 @@ public class WProducts extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Stock ID", "Product ID", "Brand Name", "Product Name", "Selling Price", "Quantity", "MFD", "EXP"
+                "Stock ID", "Selling Price", "Quantity", "MFD", "EXP"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -450,6 +442,7 @@ public class WProducts extends javax.swing.JPanel {
 
     private void stockResetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockResetButtonActionPerformed
         //logger.log(Level.INFO, "ActionEvent");
+        productsTable.clearSelection();
         sortByComboBox.setSelectedIndex(0);
         priceFromFormattedField.setText("0");
         priceToFormattedField.setText("0");

@@ -12,6 +12,7 @@ public class WGrnItem {
     private String productId;
     private String brandName;
     private String productName;
+    private String productWeight;
     private double qty;
     private double buyingPrice;
     private double sellingPrice;
@@ -128,5 +129,19 @@ public class WGrnItem {
      */
     public void setExp(String exp) {
         this.exp = exp;
+    }
+
+    /**
+     * @return the productWeight
+     */
+    public String getProductWeight() {
+        return productWeight;
+    }
+
+    /**
+     * @param productWeight the productWeight to set
+     */
+    public void setProductWeight(String productWeight) {
+        this.productWeight = productWeight;
     }
 }

@@ -162,15 +162,21 @@
             <Component class="javax.swing.JTable" name="ordersTable">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="4" rowCount="0">
+                  <Table columnCount="5" rowCount="0">
                     <Column editable="false" title="Order ID" type="java.lang.Object"/>
                     <Column editable="false" title="Outlet" type="java.lang.Object"/>
                     <Column editable="false" title="Date" type="java.lang.Object"/>
+                    <Column editable="false" title="Type" type="java.lang.Object"/>
                     <Column editable="false" title="Status" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                      <Title/>
+                      <Editor/>
+                      <Renderer/>
+                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>
@@ -213,13 +219,25 @@
             <Component class="javax.swing.JTable" name="orderItemsTable">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="2" rowCount="0">
-                    <Column editable="false" title="Product" type="java.lang.Object"/>
-                    <Column editable="false" title="Qty" type="java.lang.Object"/>
+                  <Table columnCount="4" rowCount="0">
+                    <Column editable="false" title="Product Name" type="java.lang.Object"/>
+                    <Column editable="false" title="Product Weight" type="java.lang.Object"/>
+                    <Column editable="false" title="Quantity" type="java.lang.Object"/>
+                    <Column editable="false" title="Price" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                      <Title/>
+                      <Editor/>
+                      <Renderer/>
+                    </Column>
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                      <Title/>
+                      <Editor/>
+                      <Renderer/>
+                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>
@@ -273,7 +291,7 @@
               <Font name="Poppins" size="14" style="0"/>
             </Property>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="8">
+              <StringArray count="12">
                 <StringItem index="0" value="Pending Date DESC"/>
                 <StringItem index="1" value="Pending Date ASC"/>
                 <StringItem index="2" value="Delivered Date DESC"/>
@@ -282,6 +300,10 @@
                 <StringItem index="5" value="Pending Outlet DESC"/>
                 <StringItem index="6" value="Delivered Outlet ASC"/>
                 <StringItem index="7" value="Delivered Outlet DESC"/>
+                <StringItem index="8" value="Normal Outlet ASC"/>
+                <StringItem index="9" value="Normal Outlet DESC"/>
+                <StringItem index="10" value="Special Outlet ASC"/>
+                <StringItem index="11" value="Special Outlet DESC"/>
               </StringArray>
             </Property>
           </Properties>

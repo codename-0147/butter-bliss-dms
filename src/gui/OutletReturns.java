@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import model.WarehouseReturnItem;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -53,6 +54,7 @@ public class OutletReturns extends javax.swing.JPanel {
         generateReturnSlipID();
         loadDistributors();
         loadReturnReasons();
+        loadReturnSlips();
     }
     
     private void generateReturnInvoiceID() {
@@ -175,6 +177,41 @@ public class OutletReturns extends javax.swing.JPanel {
         totalAmountLabel.setText(String.valueOf(total));
     }
     
+    private void loadReturnSlips() {
+        try {
+            String query = "SELECT * FROM `return_slip` INNER JOIN `return_invoice` "
+                    + "ON `return_slip`.`return_invoice_id` = `return_invoice`.`id` INNER JOIN `outlet` "
+                    + "ON `return_invoice`.`outlet_id` = `outlet`.`id` INNER JOIN `return_slip_status` "
+                    + "ON `return_slip`.`return_slip_status_id` = `return_slip_status`.`id` "
+                    + "WHERE `return_slip_status`.`name` = 'Approved' ";
+            
+            if (sortByComboBox.getSelectedItem().equals("Date DESC")) {
+                query += "ORDER BY `return_invoice`.`date` DESC";
+            }else if (sortByComboBox.getSelectedItem().equals("Date ASC")) {
+                query += "ORDER BY `return_invoice`.`date` ASC";
+            }else if (sortByComboBox.getSelectedItem().equals("Outlet Name ASC")) {
+                query += "ORDER BY `outlet`.`name` ASC";
+            }else if (sortByComboBox.getSelectedItem().equals("Outlet Name DESC")) {
+                query += "ORDER BY `outlet`.`name` DESC";
+            }
+            
+            ResultSet resultSet = MySQL.executeSearch(query);
+            DefaultTableModel model = (DefaultTableModel) returnSlipTable.getModel();
+            model.setRowCount(0);
+            
+            while (resultSet.next()) {
+                Vector<String> vector = new Vector<>();
+                vector.add(resultSet.getString("return_slip.id"));
+                vector.add(resultSet.getString("return_invoice.id"));
+                vector.add(resultSet.getString("outlet.name"));
+                vector.add(resultSet.getString("return_invoice.date"));
+                model.addRow(vector);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     private void resetReturnInvoice() {
         generateReturnInvoiceID();
         returnInvoiceIDField1.setText("");
@@ -188,7 +225,8 @@ public class OutletReturns extends javax.swing.JPanel {
         quantityField.setText("");
         DefaultTableModel model = (DefaultTableModel) returnInvoiceItemTable.getModel();
         model.setRowCount(0);
-        totalAmountLabel.setText("TOTAL AMOUNT");
+        totalAmountLabel.setText("0.00");
+        warehouseReturnItemMap.clear();
     }
     
     private void resetReturnSlip() {
@@ -267,11 +305,10 @@ public class OutletReturns extends javax.swing.JPanel {
         resetButton2 = new javax.swing.JButton();
         jLabel26 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        returnInvoiceItemTable1 = new javax.swing.JTable();
-        uploadImageButton = new javax.swing.JButton();
-        viewSlipButton = new javax.swing.JButton();
+        returnSlipTable = new javax.swing.JTable();
+        printSlipButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox4 = new javax.swing.JComboBox<>();
+        sortByComboBox = new javax.swing.JComboBox<>();
 
         jLabel2.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(66, 45, 22));
@@ -418,8 +455,8 @@ public class OutletReturns extends javax.swing.JPanel {
         jLabel25.setText("Total Amount :");
 
         totalAmountLabel.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        totalAmountLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        totalAmountLabel.setText("TOTAL AMOUNT");
+        totalAmountLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        totalAmountLabel.setText("0.00");
         totalAmountLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 171, 77)));
 
         distributorComboBox.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
@@ -654,42 +691,36 @@ public class OutletReturns extends javax.swing.JPanel {
         jLabel26.setForeground(new java.awt.Color(66, 45, 22));
         jLabel26.setText("Return Slips");
 
-        returnInvoiceItemTable1.setModel(new javax.swing.table.DefaultTableModel(
+        returnSlipTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Slip ID", "Ret. Inv. ID", "Outlet Name", "Date", "Slip Image"
+                "Slip ID", "Ret. Inv. ID", "Outlet Name", "Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        returnInvoiceItemTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane2.setViewportView(returnInvoiceItemTable1);
+        returnSlipTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(returnSlipTable);
 
-        uploadImageButton.setBackground(new java.awt.Color(245, 219, 200));
-        uploadImageButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        uploadImageButton.setForeground(new java.awt.Color(0, 0, 0));
-        uploadImageButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/upload-icon.png"))); // NOI18N
-        uploadImageButton.setText("Upload Image");
-
-        viewSlipButton.setBackground(new java.awt.Color(245, 219, 200));
-        viewSlipButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
-        viewSlipButton.setForeground(new java.awt.Color(0, 0, 0));
-        viewSlipButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/view-icon.png"))); // NOI18N
-        viewSlipButton.setText("View");
+        printSlipButton.setBackground(new java.awt.Color(245, 219, 200));
+        printSlipButton.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        printSlipButton.setForeground(new java.awt.Color(0, 0, 0));
+        printSlipButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/print-icon.png"))); // NOI18N
+        printSlipButton.setText("Print");
 
         jLabel1.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel1.setText("Sort By :");
 
-        jComboBox4.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Date DESC", "Date ASC", "Outlet Name DESC", "Outlet Name ASC" }));
+        sortByComboBox.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        sortByComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Date DESC", "Date ASC", "Outlet Name DESC", "Outlet Name ASC" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -749,11 +780,9 @@ public class OutletReturns extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(sortByComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(uploadImageButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(viewSlipButton)))
+                        .addComponent(printSlipButton)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -792,10 +821,9 @@ public class OutletReturns extends javax.swing.JPanel {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(viewSlipButton)
-                    .addComponent(uploadImageButton)
+                    .addComponent(printSlipButton)
                     .addComponent(jLabel1)
-                    .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sortByComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -892,7 +920,7 @@ public class OutletReturns extends javax.swing.JPanel {
                     
                     MySQL.executeIUD("INSERT INTO `return_invoice` VALUES('"+returnInvoiceID+"', '"+dateTime+"', "
                             + "'"+outletID+"', '"+distributorsMap.get(distributorName)+"', "
-                                    + "'"+returnReasonsMap.get(returnReason)+"', 1,'"+totalAmountLabel.getText()+"')");
+                                    + "'"+returnReasonsMap.get(returnReason)+"', 1, '"+totalAmountLabel.getText()+"', 1)");
                     
                     for (WarehouseReturnItem wReturnItem : warehouseReturnItemMap.values()) {
                         MySQL.executeIUD("INSERT INTO `return_invoice_items`(`qty`, `return_invoice_id`, `stock_id`) "
@@ -903,13 +931,16 @@ public class OutletReturns extends javax.swing.JPanel {
                                 + "WHERE `id` = '"+wReturnItem.getStockID()+"'");
                     }
                     
-                    InputStream path = this.getClass().getResourceAsStream("/reports/gh_return_invoice.jasper");
+                    InputStream path = this.getClass().getResourceAsStream("/reports/bb_return_invoice.jasper");
                     HashMap<String, Object> parameters = new HashMap<>();
-                    //parameters.put("Parameter1", wSupervisorIDField2.getText());
-                    //parameters.put("Parameter2", supRetInvIDField.getText());
-                    //parameters.put("Parameter3", supplierComboBox.getSelectedItem());
-                    //parameters.put("Parameter4", dateTime);
-                    //parameters.put("Parameter5", reasonComboBox.getSelectedItem());
+                    parameters.put("Parameter1", returnInvoiceIDField1.getText());
+                    parameters.put("Parameter2", outletIDLabel.getText());
+                    parameters.put("Parameter3", String.valueOf(distributorsMap.get(distributorComboBox.getSelectedItem())));
+                    parameters.put("Parameter4", vehicleNumberLabel1.getText());
+                    parameters.put("Parameter5", dateTime);
+                    parameters.put("Parameter6", String.valueOf(returnReasonsMap.get(reasonComboBox.getSelectedItem())));
+                    parameters.put("Parameter7", outletManagerIDField1.getText());
+                    parameters.put("Parameter8", totalAmountLabel.getText());
                     
                     String appDir = new File("").getAbsolutePath(); // Get the application's directory
                     String reportsFolder = appDir + File.separator + "ExportedReports"; // Main folder path
@@ -986,13 +1017,16 @@ public class OutletReturns extends javax.swing.JPanel {
                             + "`return_slip_status_id`) VALUES('"+returnSlipID+"', '"+returnInvoiceID+"', "
                                     + "'"+outletManagerID+"', 1)");
                     
-                    InputStream path = this.getClass().getResourceAsStream("/reports/gh_return_invoice.jasper");
+                    InputStream path = this.getClass().getResourceAsStream("/reports/bb_return_slip.jasper");
                     HashMap<String, Object> parameters = new HashMap<>();
-                    //parameters.put("Parameter1", wSupervisorIDField2.getText());
-                    //parameters.put("Parameter2", supRetInvIDField.getText());
-                    //parameters.put("Parameter3", supplierComboBox.getSelectedItem());
-                    //parameters.put("Parameter4", dateTime);
-                    //parameters.put("Parameter5", reasonComboBox.getSelectedItem());
+                    parameters.put("Parameter1", returnSlipIDField.getText());
+                    parameters.put("Parameter2", returnInvoiceIDField2.getText());
+                    parameters.put("Parameter3", outletNameLabel.getText());
+                    parameters.put("Parameter4", outletAddressLabel.getText());
+                    parameters.put("Parameter5", dateLabel.getText());
+                    parameters.put("Parameter6", outletManagerIDField2.getText());
+                    parameters.put("Parameter7", "N/A");
+                    parameters.put("Parameter8", vehicleNumberLabel2.getText());
                     
                     String appDir = new File("").getAbsolutePath(); // Get the application's directory
                     String reportsFolder = appDir + File.separator + "ExportedReports"; // Main folder path
@@ -1010,7 +1044,7 @@ public class OutletReturns extends javax.swing.JPanel {
                     // Path to export the PDF file (inside "Pending Return Slip Reports" subfolder)
                     String outputPath = retInvoiceReportsFolder + File.separator + "Pending_Return_Slip_report_" + returnSlipID + ".pdf";
 
-                    JRTableModelDataSource dataSource = new JRTableModelDataSource(returnInvoiceItemTable.getModel());
+                    JREmptyDataSource dataSource = new JREmptyDataSource();
                     JasperPrint report = JasperFillManager.fillReport(path, parameters, dataSource);
                     JasperViewer.viewReport(report, false);
                     JasperPrintManager.printReport(report, false);
@@ -1035,7 +1069,6 @@ public class OutletReturns extends javax.swing.JPanel {
     private javax.swing.JLabel closeLabel2;
     private javax.swing.JLabel dateLabel;
     private javax.swing.JComboBox<String> distributorComboBox;
-    private javax.swing.JComboBox<String> jComboBox4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1069,6 +1102,7 @@ public class OutletReturns extends javax.swing.JPanel {
     private javax.swing.JTextField outletManagerIDField1;
     private javax.swing.JTextField outletManagerIDField2;
     private javax.swing.JLabel outletNameLabel;
+    private javax.swing.JButton printSlipButton;
     private javax.swing.JLabel productIDLabel;
     private javax.swing.JLabel productNameLabel;
     private javax.swing.JLabel productWeightLabel;
@@ -1079,17 +1113,16 @@ public class OutletReturns extends javax.swing.JPanel {
     private javax.swing.JTextField returnInvoiceIDField1;
     private javax.swing.JTextField returnInvoiceIDField2;
     private javax.swing.JTable returnInvoiceItemTable;
-    private javax.swing.JTable returnInvoiceItemTable1;
     private javax.swing.JTextField returnSlipIDField;
+    private javax.swing.JTable returnSlipTable;
     private javax.swing.JButton saveNPrintButton1;
     private javax.swing.JButton saveNPrintButton2;
     private javax.swing.JButton selectReturnInvoiceButton;
     private javax.swing.JButton selectStockButton;
+    private javax.swing.JComboBox<String> sortByComboBox;
     private javax.swing.JLabel stockIDLabel;
     private javax.swing.JLabel totalAmountLabel;
-    private javax.swing.JButton uploadImageButton;
     private javax.swing.JLabel vehicleNumberLabel1;
     private javax.swing.JLabel vehicleNumberLabel2;
-    private javax.swing.JButton viewSlipButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -36,18 +36,18 @@ public class SelectSupplier extends javax.swing.JDialog {
     
     private void loadSuppliers() {
         try {
-            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `supplier` INNER JOIN `company` "
-                    + "ON `supplier`.`company_id` = `company`.`id`");
+            ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `supplier`");
             DefaultTableModel model = (DefaultTableModel)suppliersTable.getModel();
             model.setRowCount(0);
             
             while (resultSet.next()) {
                 Vector<String> vector = new Vector<>();
+                vector.add(resultSet.getString("id"));
+                vector.add(resultSet.getString("fname"));
+                vector.add(resultSet.getString("lname"));
                 vector.add(resultSet.getString("mobile"));
-                vector.add(resultSet.getString("first_name"));
-                vector.add(resultSet.getString("last_name"));
                 vector.add(resultSet.getString("email"));
-                vector.add(resultSet.getString("company.name"));
+                vector.add(resultSet.getString("company"));
                 model.addRow(vector);
             }
         } catch (Exception e) {
@@ -111,11 +111,11 @@ public class SelectSupplier extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Mobile", "First Name", "Last Name", "Email", "Company"
+                "ID", "First Name", "Last Name", "Mobile", "Email", "Company"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -169,11 +169,23 @@ public class SelectSupplier extends javax.swing.JDialog {
     private void suppliersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_suppliersTableMouseClicked
         //logger.log(Level.INFO, "MouseEvent");
         int row = suppliersTable.getSelectedRow();
+        String supName = String.valueOf(suppliersTable.getValueAt(row, 1)) + " " 
+                + String.valueOf(suppliersTable.getValueAt(row, 2));
         
         if (evt.getClickCount() == 2) {
             if (wGrn != null) {
-                wGrn.getSupplierMobileField().setText(String.valueOf(suppliersTable.getValueAt(row, 0)));
-                wGrn.getSupplierNameLabel().setText(String.valueOf(suppliersTable.getValueAt(row, 1)) + " " + String.valueOf(suppliersTable.getValueAt(row, 2)));
+                if (supName.equals("Production Dep")) {
+                    wGrn.getPaymentFormattedField().setEnabled(false);
+                    wGrn.getSupplierIDField().setText(String.valueOf(suppliersTable.getValueAt(row, 0)));
+                    wGrn.getSupplierNameLabel().setText(String.valueOf(suppliersTable.getValueAt(row, 1)) + " " 
+                            + String.valueOf(suppliersTable.getValueAt(row, 2)));
+                }else {
+                    wGrn.getPaymentFormattedField().setEnabled(true);
+                    wGrn.getSupplierIDField().setText(String.valueOf(suppliersTable.getValueAt(row, 0)));
+                    wGrn.getSupplierNameLabel().setText(String.valueOf(suppliersTable.getValueAt(row, 1)) + " " 
+                            + String.valueOf(suppliersTable.getValueAt(row, 2)));
+                }
+                
                 this.dispose();
             }
         }
